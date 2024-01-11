@@ -17,9 +17,9 @@ class Program
     public static bool canClose = true;
     static async Task Main()
     {
-        _ = await CheckUpdatesAsync(); //Dit gaat niet lukken... admin is nodig...
+        _ = await CheckUpdatesAsync(); // Werkt eindelijk
 
-        //ThrowError();
+        ThrowError(message:"Test");
 
         while (!canClose)
         {
@@ -37,7 +37,7 @@ class Program
     static async Task<bool> CheckUpdatesAsync()
     {
         // Check for updates
-        string currentVersion = "0.0.1";
+        string currentVersion = "0.0.3";
         string versionUrl = "https://site-mm.000webhostapp.com/v/";
 
         // Create an instance of the Version class
@@ -184,13 +184,21 @@ class Version
 
             DEBUGGER.LogDebug("Function DownloadUpdateAsync after downloading, before saving");
 
+            DEBUGGER.LogDebug("TEST 00011011054 kaas");                                                                //------------------------------------------------------------------------------
+
+
             // Sla het updatebestand op
-            string updateFilePath = Path.Combine(installDir, "updates", "version", latestVersion);
-            EnsureDirExists(updateFilePath);
+            string updateFileName = "update.zip"; // Geef een bestandsnaam op
+            string updateFilePath = Path.Combine(installDir, "updates", "version", latestVersion, updateFileName);
+            EnsureDirExists(Path.GetDirectoryName(updateFilePath)); // Zorg ervoor dat de map bestaat
 
-            DEBUGGER.LogDebug("TEST 00011011054 kaas");
+            // Gebruik FileStream om het bestand te schrijven
+            using (FileStream fileStream = new FileStream(updateFilePath, FileMode.Create, FileAccess.Write))
+            {
+                await fileStream.WriteAsync(updateBytes, 0, updateBytes.Length);
+                await fileStream.FlushAsync();
+            }
 
-            File.WriteAllBytes(updateFilePath, updateBytes);
 
             DEBUGGER.LogDebug("Function DownloadUpdateAsync after saving, before exrtacting");
 
