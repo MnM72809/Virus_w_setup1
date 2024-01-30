@@ -1,23 +1,23 @@
-echo test 0.0
+rem echo test 0.0
 @echo off
-echo test 0.1
+rem echo test 0.1
 setlocal enabledelayedexpansion
-echo test 0.2
+rem echo test 0.2
 
 REM Verkrijg de paden van de bron- en doelmap
-echo test 1
+rem echo test 1
 set "beginPath=%1"
-echo test 2
+rem echo test 2
 set "destinationPath=%2"
-echo test 3
+rem echo test 3
 set "starterProgram=%3"
-echo  .
-echo %starterProgram%
-echo  .
-echo test 4
+rem echo  .
+rem echo %starterProgram%
+rem echo  .
+rem echo test 4
 set "hasExited=%4"
-echo test 5
-echo %0 %1 %2 %3 %4
+rem echo test 5
+rem echo %0 %1 %2 %3 %4
 
 if "%hasExited%"=="true" (
     GOTO :CONTINUE
@@ -32,7 +32,7 @@ if "%hasExited%"=="true" (
     exit /b
 )
 
-echo test 6
+rem echo test 6
 
 :CONTINUE
 
@@ -46,28 +46,28 @@ REM echo      Main program exited
 REM echo      .
 REM pause
 
-echo Waiting 2 seconds for the main program to exit...
+rem echo Waiting 2 seconds for the main program to exit...
 TIMEOUT /T 2 /NOBREAK >NUL
-pause
+rem pause
 
-echo test 7
+rem echo test 7
 
 REM Voer hier de logica uit om bestanden bij te werken
 
 REM Verwijder de tijdelijke map
 rmdir /s /q "%tempDir%"
-echo test 8
+rem echo test 8
 
 REM Maak een tijdelijke map om circulaire koppelingen te vermijden
 set "tempDir=%TEMP%\tempCopyDir"
 md "%tempDir%"
 
-echo test 9
+rem echo test 9
 
 REM Verplaats alle bestanden van de bronmap naar de tijdelijke map
 xcopy /s /y /i "%beginPath%\*" "%tempDir%"
 
-echo test 10
+rem echo test 10
 
 del "%destinationPath%\*.json" "%destinationPath%\*.dll" "%destinationPath%\*.exe" "%destinationPath%\*.pdb"
 
@@ -82,14 +82,11 @@ start "" "%starterProgram%"
 rem %starterProgram%.exe
 
 
-echo     beginPath        %beginPath%
-echo     destinationPath  %destinationPath%
-echo     starterProgram   %starterProgram%
-echo     tempDir          %tempDir%
+rem echo     beginPath        %beginPath%
+rem echo     destinationPath  %destinationPath%
+rem echo     starterProgram   %starterProgram%
+rem echo     tempDir          %tempDir%
 
-
-REM Pause (for debugging purposes)
-pause
 
 REM Sluit de hulpapplicatie
 exit 0
