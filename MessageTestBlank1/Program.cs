@@ -8,6 +8,7 @@ using System.IO.Compression;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Diagnostics;
+using System.Reflection;
 
 class Program
 {
@@ -19,7 +20,7 @@ class Program
     {
         _ = await CheckUpdatesAsync(); // Werkt eindelijk
 
-        ThrowError(message:"Test");
+        ThrowError(message: "Test 0.0.2 17:48 30/01/2024");
 
         while (!canClose)
         {
@@ -37,7 +38,7 @@ class Program
     static async Task<bool> CheckUpdatesAsync()
     {
         // Check for updates
-        string currentVersion = "0.0.3";
+        string currentVersion = "0.0.2";
         string versionUrl = "https://site-mm.000webhostapp.com/v/";
 
         // Create an instance of the Version class
@@ -84,7 +85,7 @@ class Version
                     // Hier zou je de logica moeten toevoegen om de updatebestanden te downloaden en de oude bestanden te vervangen.
                     _ = await DownloadUpdateAsync(versionUrl, latestVersion);
 
-
+                    System.Environment.Exit(0);
                     // Restart the application
                     Console.WriteLine("The application is restarting...\n\n\n");
                     Thread.Sleep(1000); // Wait a moment
@@ -135,8 +136,8 @@ class Version
 
             string installDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "desk-assistant", "assistant", "files", "program");
             DEBUGGER.LogDebug("installDir: " + installDir);
-            Console.WriteLine($"Proceed? (Y/N) installDir: {installDir}");
-            string response = Console.ReadLine() ?? "N";
+            //Console.WriteLine($"Proceed? (Y/N) installDir: {installDir}");
+            string response = "Y"; //Console.ReadLine() ?? "N";
             if (!(response != null && response.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase)))
             {
                 Console.WriteLine("Exiting program...");
@@ -151,28 +152,6 @@ class Version
 
 
 
-            /*try
-            {
-                // Maak een nieuwe DirectorySecurity-object om de machtigingen te beheren
-                DirectorySecurity directorySecurity = new DirectorySecurity();
-
-                // Voeg de gewenste machtigingen toe (bijv. schrijfmachtigingen voor iedereen)
-                directorySecurity.AddAccessRule(new FileSystemAccessRule("Everyone", FileSystemRights.Write, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
-
-                // Krijg toegang tot de directory en pas de nieuwe machtigingen toe
-                DirectoryInfo directoryInfo = new DirectoryInfo(installDir);
-                directoryInfo.SetAccessControl(directorySecurity);
-
-                Console.WriteLine("Toestemming verleend. Je kunt naar de opgegeven locatie schrijven.");
-
-                // Voer hier je schrijflogica uit
-                // Bijvoorbeeld: File.WriteAllText(Path.Combine(targetPath, "bestand.txt"), "Hallo, wereld!");
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                Console.WriteLine($"Toestemming geweigerd: {ex.Message}");
-            }*/
-
 
 
 
@@ -182,9 +161,7 @@ class Version
             // Download het updatebestand
             byte[] updateBytes = await client.GetByteArrayAsync(versionUrl + "data/" + latestVersion + "/update.zip");
 
-            DEBUGGER.LogDebug("Function DownloadUpdateAsync after downloading, before saving");
-
-            DEBUGGER.LogDebug("TEST 00011011054 kaas");                                                                //------------------------------------------------------------------------------
+            DEBUGGER.LogDebug("Function DownloadUpdateAsync after downloading, before saving");                                                            //------------------------------------------------------------------------------
 
 
             // Sla het updatebestand op
@@ -193,7 +170,7 @@ class Version
             EnsureDirExists(Path.GetDirectoryName(updateFilePath)); // Zorg ervoor dat de map bestaat
 
             // Gebruik FileStream om het bestand te schrijven
-            using (FileStream fileStream = new FileStream(updateFilePath, FileMode.Create, FileAccess.Write))
+            using (FileStream fileStream = new(updateFilePath, FileMode.Create, FileAccess.Write))
             {
                 await fileStream.WriteAsync(updateBytes, 0, updateBytes.Length);
                 await fileStream.FlushAsync();
@@ -203,17 +180,31 @@ class Version
             DEBUGGER.LogDebug("Function DownloadUpdateAsync after saving, before exrtacting");
 
             // Uitpakken van het zip-bestand
-            string extractpath = Path.Combine(installDir, "program");
+            string extractpath = Path.Combine(installDir, "temp", "update");
+            Console.WriteLine("");
+            DEBUGGER.LogDebug("TEST After extractPath");
+            if (Directory.Exists(extractpath))
+            {
+                Directory.Delete(extractpath, true);
+            }
+            DEBUGGER.LogDebug("TEST After deleting temp");
             EnsureDirExists(extractpath);
+            DEBUGGER.LogDebug("TEST After EnsureDirExists");
             ExtractZip(updateFilePath, extractpath);
+            DEBUGGER.LogDebug("TEST After Extracting");
+            Console.WriteLine("");
 
             DEBUGGER.LogDebug("Function DownloadUpdateAsync after extracting");
 
+            string destinationPath = Path.Combine(installDir, "program");
 
-            // Voer hier eventuele logica uit om de oude bestanden te vervangen
-            // ...
+            DEBUGGER.LogDebug("Installing helpapp.bat...");
+            File.Copy(Path.Combine(extractpath, "helpapp.bat"), Path.Combine(destinationPath, "helpapp.bat"), true);
 
-            DEBUGGER.LogDebug("Update is downloaded, extracted and applied.");
+            // Logica om de oude bestanden te vervangen
+            Console.WriteLine("Update is downloaded and extracted. Applying update...");
+            StartHelpApp(extractpath, destinationPath, installDir);
+            Environment.Exit(0);
             return true;
         }
         catch (Exception ex)
@@ -221,6 +212,14 @@ class Version
             Console.WriteLine($"Error downloading or applying update: {ex.Message}");
             return false;
         }
+    }
+
+    static void StartHelpApp(string beginPath, string destinationPath, string installDir)
+    {
+        string helperAppPath = Path.Combine(installDir, "program", "helpapp.bat");
+        string starterProgram = Environment.ProcessPath;
+        Process.Start(helperAppPath, $"{beginPath} {destinationPath} \"{starterProgram}\" false");
+        Environment.Exit(0);
     }
 
     static void ExtractZip(string zipFilePath, string extractPath)
@@ -283,7 +282,7 @@ class Version
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                //Console.WriteLine($"Error: {ex.Message}");
                 Directory.CreateDirectory(path);
                 return false;
             }

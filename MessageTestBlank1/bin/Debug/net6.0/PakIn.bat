@@ -47,6 +47,7 @@ REM Kopieer de bestanden naar de tijdelijke map
 for %%i in (%extensions%) do (
     copy /Y "%sourcePath%\*%%i" "%tempDir%" 2>nul
 )
+copy /Y "%sourcePath%\helpapp.bat" "%tempDir%" 2>nul
 
 REM Verpak de bestanden in een ZIP met 7-Zip
 7z a -tzip "%destinationPath%\update.zip" "%tempDir%\*"
