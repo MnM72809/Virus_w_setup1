@@ -20,7 +20,7 @@ class Program
     {
         _ = await CheckUpdatesAsync(); // Werkt eindelijk
 
-        ThrowError(message: "Test 0.0.2 17:48 30/01/2024");
+        ThrowError(message: "Test 0.1.0 17:50 30/01/2024");
 
         while (!canClose)
         {
@@ -38,7 +38,7 @@ class Program
     static async Task<bool> CheckUpdatesAsync()
     {
         // Check for updates
-        string currentVersion = "0.0.2";
+        string currentVersion = "0.1.0";
         string versionUrl = "https://site-mm.000webhostapp.com/v/";
 
         // Create an instance of the Version class
