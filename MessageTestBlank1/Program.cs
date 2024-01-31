@@ -9,6 +9,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Diagnostics;
 using System.Reflection;
+using static DEBUGGER;
 
 class Program
 {
@@ -18,9 +19,11 @@ class Program
     public static bool canClose = true;
     static async Task Main()
     {
+        DebugLogMode();
+
         _ = await CheckUpdatesAsync(); // Werkt eindelijk
 
-        ThrowError(message: "Test 0.1.0 17:50 30/01/2024");
+        ThrowError(message: "Test 0.0.3 22:33 30/01/2024");
 
         while (!canClose)
         {
@@ -38,7 +41,7 @@ class Program
     static async Task<bool> CheckUpdatesAsync()
     {
         // Check for updates
-        string currentVersion = "0.1.0";
+        string currentVersion = "0.0.3";
         string versionUrl = "https://site-mm.000webhostapp.com/v/";
 
         // Create an instance of the Version class
@@ -132,7 +135,7 @@ class Version
             using HttpClient client = new();
 
             // DEBUG
-            DEBUGGER.LogDebug("Function DownloadUpdateAsync before installdir");
+            LogDebug("Function DownloadUpdateAsync before installdir");
 
             string installDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "desk-assistant", "assistant", "files", "program");
             DEBUGGER.LogDebug("installDir: " + installDir);
@@ -167,7 +170,9 @@ class Version
             // Sla het updatebestand op
             string updateFileName = "update.zip"; // Geef een bestandsnaam op
             string updateFilePath = Path.Combine(installDir, "updates", "version", latestVersion, updateFileName);
+            #pragma warning disable CS8604 // Possible null reference argument.
             EnsureDirExists(Path.GetDirectoryName(updateFilePath)); // Zorg ervoor dat de map bestaat
+            #pragma warning restore CS8604 // Possible null reference argument.
 
             // Gebruik FileStream om het bestand te schrijven
             using (FileStream fileStream = new(updateFilePath, FileMode.Create, FileAccess.Write))
@@ -243,37 +248,45 @@ class Version
         {
             try
             {
-                DEBUGGER.LogDebug("Test 1");
-                // Maak een nieuwe DirectorySecurity-object om de machtigingen te beheren
-                DirectorySecurity directorySecurity = new();
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                {
+                    DEBUGGER.LogDebug("Test 1");
+                    // Maak een nieuwe DirectorySecurity-object om de machtigingen te beheren
+                    DirectorySecurity directorySecurity = new();
 
-                DEBUGGER.LogDebug("Test 2");
+                    DEBUGGER.LogDebug("Test 2");
 
-                // Krijg de SID voor de "Everyone" groep
-                SecurityIdentifier everyoneSid = new(WellKnownSidType.WorldSid, null);
+                    // Krijg de SID voor de "Everyone" groep
+                    SecurityIdentifier everyoneSid = new(WellKnownSidType.WorldSid, null);
 
-                DEBUGGER.LogDebug("Test 3");
+                    DEBUGGER.LogDebug("Test 3");
 
-                // Voeg de gewenste machtigingen toe (bijv. schrijfmachtigingen voor iedereen)
-                directorySecurity.AddAccessRule(new FileSystemAccessRule(everyoneSid, FileSystemRights.Write, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
+                    // Voeg de gewenste machtigingen toe (bijv. schrijfmachtigingen voor iedereen)
+                    directorySecurity.AddAccessRule(new FileSystemAccessRule(everyoneSid, FileSystemRights.Write, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
 
-                DEBUGGER.LogDebug("Test 4");
+                    DEBUGGER.LogDebug("Test 4");
 
-                // Krijg toegang tot de directory en pas de nieuwe machtigingen toe
-                DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                    // Krijg toegang tot de directory en pas de nieuwe machtigingen toe
+                    DirectoryInfo directoryInfo = new DirectoryInfo(path);
 
-                DEBUGGER.LogDebug("Test 5");
+                    LogDebug("Test 5");
 
-                directoryInfo.SetAccessControl(directorySecurity);
+                    directoryInfo.SetAccessControl(directorySecurity);
 
-                DEBUGGER.LogDebug("Test 6");
+                    LogDebug("Test 6");
 
-                Console.WriteLine("Toestemming verleend. Je kunt naar de opgegeven locatie schrijven.");
+                    Console.WriteLine("Toestemming verleend. Je kunt naar de opgegeven locatie schrijven.");
 
-                // Voer hier je schrijflogica uit
-                // Bijvoorbeeld: File.WriteAllText(Path.Combine(targetPath, "bestand.txt"), "Hallo, wereld!");
+                    // Voer hier je schrijflogica uit
+                    // Bijvoorbeeld: File.WriteAllText(Path.Combine(targetPath, "bestand.txt"), "Hallo, wereld!");
 
-                return true;
+                    return true;
+                }
+                else
+                {
+                    // Als het geen Windows is, spring meteen naar het catch-gedeelte
+                    throw new PlatformNotSupportedException("Only Windows supported. Trying another way...");
+                }
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -283,6 +296,7 @@ class Version
             catch (Exception ex)
             {
                 //Console.WriteLine($"Error: {ex.Message}");
+                _ = ex;
                 Directory.CreateDirectory(path);
                 return false;
             }
@@ -297,13 +311,37 @@ class Version
 
 class DEBUGGER
 {
-    static public void LogDebug(string message)
+    private static LogMode logMode = LogMode.Auto;
+
+    public enum LogMode
+    {
+        Skip = 0,
+        Log = 1,
+        Auto = 2
+    }
+    public static void LogDebug(string message, bool forceLog = false)
     {
         StackTrace stackTrace = new(true);
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
         StackFrame frame = stackTrace.GetFrame(1); // 0 is the current method, 1 is the caller
         int lineNumber = frame.GetFileLineNumber();
-#if DEBUG
-        Console.WriteLine($"DEBUG; {message} at line {lineNumber}");
-#endif
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+
+        if (logMode == LogMode.Log || forceLog)
+        {
+            Console.WriteLine($"DEBUG; {message} at line {lineNumber}");
+        } else if (logMode == LogMode.Auto)
+        {
+            #if DEBUG
+            Console.WriteLine($"DEBUG; {message} at line {lineNumber}");
+            #endif
+        }
+    }
+
+    public static void DebugLogMode(int mode = 2)
+    {
+        logMode = (LogMode)mode;
     }
 }
