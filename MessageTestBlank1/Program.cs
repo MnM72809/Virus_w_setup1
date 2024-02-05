@@ -23,7 +23,7 @@ class Program
 
         _ = await CheckUpdatesAsync(); // Werkt eindelijk
 
-        ThrowError(message: "Test 0.0.3 22:33 30/01/2024");
+        _ = ThrowError(message: "Test 0.1.0 22:37 04/02/2024");
 
         while (!canClose)
         {
@@ -41,14 +41,14 @@ class Program
     static async Task<bool> CheckUpdatesAsync()
     {
         // Check for updates
-        string currentVersion = "0.0.3";
+        string currentVersion = "0.1.0";
         string versionUrl = "https://site-mm.000webhostapp.com/v/";
 
         // Create an instance of the Version class
         Version versionChecker = new();
 
         // Call the non-static method CheckForUpdates on the instance and asynchronously wait for its completion
-        return await versionChecker.CheckForUpdates(currentVersion, versionUrl);
+        return await Version.CheckForUpdates(currentVersion, versionUrl);
     }
 }
 
@@ -61,7 +61,7 @@ class Program
 
 class Version
 {
-    public async Task<bool> CheckForUpdates(string currentVersion, string versionUrl)
+    public static async Task<bool> CheckForUpdates(string currentVersion, string versionUrl)
     {
         Program.canClose = false;
         try
@@ -74,12 +74,12 @@ class Version
             if (IsUpdateAvailable(currentVersion, latestVersion))
             {
                 Console.WriteLine($"A new version is available: {latestVersion}");
-                Console.WriteLine("Do you want to install it? (J/N)");
+                Console.WriteLine("Do you want to install it? (Y/N)");
 
                 // Voer hier logica uit om de update toe te passen indien gewenst
                 string response = Console.ReadLine() ?? "N";
 
-                if (response != null && response.Trim().Equals("J", StringComparison.OrdinalIgnoreCase))
+                if (response != null && response.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase))
                 {
                     Console.WriteLine("The update is being applied...");
                     // Download de update
@@ -88,14 +88,14 @@ class Version
                     // Hier zou je de logica moeten toevoegen om de updatebestanden te downloaden en de oude bestanden te vervangen.
                     _ = await DownloadUpdateAsync(versionUrl, latestVersion);
 
-                    System.Environment.Exit(0);
+                    Environment.Exit(0);
                     // Restart the application
                     Console.WriteLine("The application is restarting...\n\n\n");
                     Thread.Sleep(1000); // Wait a moment
                     // Start a new process to replace the current process
-                    System.Diagnostics.Process.Start(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+                    Process.Start(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
                     // Exit the current process
-                    System.Environment.Exit(0);
+                    Environment.Exit(0);
                     return true;
                 }
                 else
@@ -105,7 +105,34 @@ class Version
             }
             else
             {
-                Console.WriteLine("Je hebt de nieuwste versie.");
+                Console.WriteLine("You have the newest version. Do you want to install it anyways? (Y/N)");
+
+                // Voer hier logica uit om de update toe te passen indien gewenst
+                string response = Console.ReadLine() ?? "N";
+
+                if (response != null && response.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine("The update is being applied...");
+                    // Download de update
+                    // Backup van de huidige bestanden
+
+                    // Hier zou je de logica moeten toevoegen om de updatebestanden te downloaden en de oude bestanden te vervangen.
+                    _ = await DownloadUpdateAsync(versionUrl, latestVersion);
+
+                    Environment.Exit(0);
+                    // Restart the application
+                    Console.WriteLine("The application is restarting...\n\n\n");
+                    Thread.Sleep(1000); // Wait a moment
+                    // Start a new process to replace the current process
+                    Process.Start(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+                    // Exit the current process
+                    Environment.Exit(0);
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("De update is geannuleerd.");
+                }
             }
         }
         catch (Exception ex)
@@ -148,7 +175,7 @@ class Version
             }
             if (!EnsureDirExists(installDir))
             {
-                DEBUGGER.LogDebug("installDir doesn't exist yet");
+                LogDebug("installDir doesn't exist yet");
             }
 
 
@@ -159,12 +186,12 @@ class Version
 
 
 
-            DEBUGGER.LogDebug("Function DownloadUpdateAsync after installdir, before downloading");
+            LogDebug("Function DownloadUpdateAsync after installdir, before downloading");
 
             // Download het updatebestand
-            byte[] updateBytes = await client.GetByteArrayAsync(versionUrl + "data/" + latestVersion + "/update.zip");
+            byte[] updateBytes = await client.GetByteArrayAsync(versionUrl + "data/newest/update.zip");
 
-            DEBUGGER.LogDebug("Function DownloadUpdateAsync after downloading, before saving");                                                            //------------------------------------------------------------------------------
+            LogDebug("Function DownloadUpdateAsync after downloading, before saving");                                                            //------------------------------------------------------------------------------
 
 
             // Sla het updatebestand op
