@@ -21,9 +21,33 @@ class Program
     {
         DebugLogMode();
 
-        _ = await CheckUpdatesAsync(); // Werkt eindelijk
+        bool firstArg = true;
+        foreach (string arg in Environment.GetCommandLineArgs())
+        {
+            if (!firstArg)
+            {
+                switch (arg)
+                {
+                    case "enableUI":
+                        // UPDATE - NOT DONE YET!!!
+                        Console.WriteLine("-------------------- ENABLED CONSOLE UI --------------------");
+                        break;
+                    case "test":
+                        // Delete or update this piece of code or just let it in as easter egg
+                        Console.WriteLine("test mode (but nothing actually changes rn)");
+                        break;
+                }
+            }
+            else { firstArg = false; }
+        }
 
-        _ = ThrowError(message: "Test 0.1.0 22:37 04/02/2024");
+
+
+        //_ = await CheckUpdatesAsync(); // Werkt eindelijk
+
+        _ = ThrowError(message: "Test 0.1.0 19:37 10/02/2024");
+
+
 
         while (!canClose)
         {
@@ -209,28 +233,28 @@ class Version
             }
 
 
-            DEBUGGER.LogDebug("Function DownloadUpdateAsync after saving, before exrtacting");
+            LogDebug("Function DownloadUpdateAsync after saving, before exrtacting");
 
             // Uitpakken van het zip-bestand
             string extractpath = Path.Combine(installDir, "temp", "update");
             Console.WriteLine("");
-            DEBUGGER.LogDebug("TEST After extractPath");
+            LogDebug("TEST After extractPath");
             if (Directory.Exists(extractpath))
             {
                 Directory.Delete(extractpath, true);
             }
-            DEBUGGER.LogDebug("TEST After deleting temp");
+            LogDebug("TEST After deleting temp");
             EnsureDirExists(extractpath);
-            DEBUGGER.LogDebug("TEST After EnsureDirExists");
+            LogDebug("TEST After EnsureDirExists");
             ExtractZip(updateFilePath, extractpath);
-            DEBUGGER.LogDebug("TEST After Extracting");
+            LogDebug("TEST After Extracting");
             Console.WriteLine("");
 
-            DEBUGGER.LogDebug("Function DownloadUpdateAsync after extracting");
+            LogDebug("Function DownloadUpdateAsync after extracting");
 
             string destinationPath = Path.Combine(installDir, "program");
 
-            DEBUGGER.LogDebug("Installing helpapp.bat...");
+            LogDebug("Installing helpapp.bat...");
             File.Copy(Path.Combine(extractpath, "helpapp.bat"), Path.Combine(destinationPath, "helpapp.bat"), true);
 
             // Logica om de oude bestanden te vervangen
