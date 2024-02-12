@@ -1,14 +1,8 @@
-﻿using System;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.Runtime.InteropServices;
 using System.IO.Compression;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Diagnostics;
-using System.Reflection;
 using static DEBUGGER;
 
 class Program
@@ -17,10 +11,25 @@ class Program
     public static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
 
     public static bool canClose = true;
+    public static string ProcessFileName = "";
+    //public static class MsboxOptions
+    //{
+    //    enum Buttons
+    //    {
+    //        OK,
+    //        OKCancel,
+    //        YesNo,
+    //        YesNoCancel
+    //    }
+    //}
+
     static async Task Main()
     {
         DebugLogMode();
 
+
+        bool enableUI = false;
+        bool forceInstall = false;
         bool firstArg = true;
         foreach (string arg in Environment.GetCommandLineArgs())
         {
@@ -28,24 +37,66 @@ class Program
             {
                 switch (arg)
                 {
-                    case "enableUI":
+                    case "--enableUI":
                         // UPDATE - NOT DONE YET!!!
+                        enableUI = true;
                         Console.WriteLine("-------------------- ENABLED CONSOLE UI --------------------");
                         break;
-                    case "test":
-                        // Delete or update this piece of code or just let it in as easter egg
-                        Console.WriteLine("test mode (but nothing actually changes rn)");
+                    case "--debug":
+                        // Enable debug mode
+                        Console.WriteLine("Debug mode");
+                        DebugLogMode(1);
+                        break;
+                    case "--forceInstall":
+                        forceInstall = true;
                         break;
                 }
             }
-            else { firstArg = false; }
+            else {
+                ProcessFileName = arg;
+                Console.WriteLine(ProcessFileName);
+                firstArg = false;
+            }
         }
 
+        if (!enableUI)
+        {
+            string currentProcess = Environment.ProcessPath ?? ProcessFileName;
+            //Console.WriteLine(currentProcess);
+            string arguments = "";
+            for (int i = 0; i < Environment.GetCommandLineArgs().Length - 1; i++)
+            {
+                string arg = Environment.GetCommandLineArgs()[i + 1];
+                if (arg != "--enableUI")
+                {
+                    arguments += arg + " ";
+                }
+            }
+            ProcessStartInfo startInfo = new(currentProcess)
+            {
+                CreateNoWindow = true,
+                Arguments = "--enableUI" + arguments
+            };
+            //Console.WriteLine(startInfo);
+            //Console.WriteLine(ProcessFileName);
+            //Console.ReadLine();
+            //await Task.Delay(2000);
+            Process.Start(startInfo);
+            Environment.Exit(0);
+        }
+
+        // Start make_shortcut.bat without a window
+        ProcessStartInfo make_shortcutStartInfo = new("make_shortcut.bat")
+        {
+            CreateNoWindow = true
+        };
+        Process.Start(make_shortcutStartInfo);
 
 
-        //_ = await CheckUpdatesAsync(); // Werkt eindelijk
 
-        _ = ThrowError(message: "Test 0.1.0 19:37 10/02/2024");
+        _ = await CheckUpdatesAsync(forceInstall); // Werkt eindelijk
+
+        _ = ThrowError(message: "Test 0.1.1 19:55 11/02/2024");
 
 
 
@@ -62,17 +113,17 @@ class Program
         return MessageBox(IntPtr.Zero, message, title, buttons);
     }
 
-    static async Task<bool> CheckUpdatesAsync()
+    static async Task<bool> CheckUpdatesAsync(bool forceInstall = false)
     {
         // Check for updates
-        string currentVersion = "0.1.0";
+        string currentVersion = "0.1.1";
         string versionUrl = "https://site-mm.000webhostapp.com/v/";
 
         // Create an instance of the Version class
         Version versionChecker = new();
 
         // Call the non-static method CheckForUpdates on the instance and asynchronously wait for its completion
-        return await Version.CheckForUpdates(currentVersion, versionUrl);
+        return await Version.CheckForUpdates(currentVersion, versionUrl, forceInstall);
     }
 }
 
@@ -85,7 +136,7 @@ class Program
 
 class Version
 {
-    public static async Task<bool> CheckForUpdates(string currentVersion, string versionUrl)
+    public static async Task<bool> CheckForUpdates(string currentVersion, string versionUrl, bool forceInstall = false)
     {
         Program.canClose = false;
         try
@@ -101,7 +152,8 @@ class Version
                 Console.WriteLine("Do you want to install it? (Y/N)");
 
                 // Voer hier logica uit om de update toe te passen indien gewenst
-                string response = Console.ReadLine() ?? "N";
+                //string response = Console.ReadLine() ?? "N";
+                string response = "Y";
 
                 if (response != null && response.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase))
                 {
@@ -132,7 +184,12 @@ class Version
                 Console.WriteLine("You have the newest version. Do you want to install it anyways? (Y/N)");
 
                 // Voer hier logica uit om de update toe te passen indien gewenst
-                string response = Console.ReadLine() ?? "N";
+                //string response = Console.ReadLine() ?? "N";
+                string response = "N";
+                if (forceInstall)
+                {
+                    response = "Y";
+                }
 
                 if (response != null && response.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase))
                 {
