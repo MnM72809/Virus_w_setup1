@@ -35,26 +35,29 @@ class Program
         {
             if (!firstArg)
             {
-                switch (arg)
+                switch (arg.ToLower())
                 {
-                    case "--enableUI":
-                        // UPDATE - NOT DONE YET!!!
+                    case "--enableui": //--enableUI to lowercase
                         enableUI = true;
                         Console.WriteLine("-------------------- ENABLED CONSOLE UI --------------------");
                         break;
                     case "--debug":
                         // Enable debug mode
-                        Console.WriteLine("Debug mode");
+                        Console.WriteLine("Debug mode (debug lines get logged)");
                         DebugLogMode(1);
                         break;
-                    case "--forceInstall":
+                    case "--forceinstall": //--forceInstall to lowercase
                         forceInstall = true;
+                        break;
+                    default:
+                        Console.WriteLine("Argument \"" + arg + "\" not recognised");
+                        ThrowError(message: "Argument \""+arg+"\" not recognised", title: "Wrong argument", buttons: 48);
                         break;
                 }
             }
             else {
                 ProcessFileName = arg;
-                Console.WriteLine(ProcessFileName);
+                //Console.WriteLine(ProcessFileName);
                 firstArg = false;
             }
         }
@@ -96,7 +99,7 @@ class Program
 
         _ = await CheckUpdatesAsync(forceInstall); // Werkt eindelijk
 
-        _ = ThrowError(message: "Test 0.1.1 19:55 11/02/2024");
+        //_ = ThrowError(message: "Test 0.1.2 12:55 14/02/2024", title: "info", buttons: );
 
 
 
@@ -108,23 +111,32 @@ class Program
     }
 
 
-    private static int ThrowError(string message = "Something went wrong.", string title = "Error", uint buttons = 16)
+    private static int ThrowError(
+        string message = "Something went wrong.",
+        string title = "Error",
+        uint buttons = 16)
     {
         return MessageBox(IntPtr.Zero, message, title, buttons);
     }
 
+
     static async Task<bool> CheckUpdatesAsync(bool forceInstall = false)
     {
         // Check for updates
-        string currentVersion = "0.1.1";
-        string versionUrl = "https://site-mm.000webhostapp.com/v/";
+        //VersionInfo versionInfo = new();
 
         // Create an instance of the Version class
         Version versionChecker = new();
 
         // Call the non-static method CheckForUpdates on the instance and asynchronously wait for its completion
-        return await Version.CheckForUpdates(currentVersion, versionUrl, forceInstall);
+        return await Version.CheckForUpdates(forceInstall);
     }
+}
+static class VersionInfo
+{
+    public static readonly string currentVersion = "0.1.2";
+    public static string versionUrl = "https://site-mm.000webhostapp.com/v/";
+    public static bool debug = false;
 }
 
 
@@ -136,17 +148,23 @@ class Program
 
 class Version
 {
-    public static async Task<bool> CheckForUpdates(string currentVersion, string versionUrl, bool forceInstall = false)
+    public static async Task<bool> CheckForUpdates(bool forceInstall = false)
     {
         Program.canClose = false;
         try
         {
+            if (VersionInfo.debug)
+            {
+                VersionInfo.versionUrl = "https://site-mm.000webhostapp.com/v/debug/";
+            }
+
+
             using HttpClient client = new();
             // Haal het versienummer van de nieuwste versie op van de externe bron
-            string latestVersion = await client.GetStringAsync(versionUrl + "version.txt");
+            string latestVersion = await client.GetStringAsync(VersionInfo.versionUrl + "version.txt");
 
             // Vergelijk de versienummers
-            if (IsUpdateAvailable(currentVersion, latestVersion))
+            if (IsUpdateAvailable(VersionInfo.currentVersion, latestVersion))
             {
                 Console.WriteLine($"A new version is available: {latestVersion}");
                 Console.WriteLine("Do you want to install it? (Y/N)");
@@ -162,14 +180,14 @@ class Version
                     // Backup van de huidige bestanden
 
                     // Hier zou je de logica moeten toevoegen om de updatebestanden te downloaden en de oude bestanden te vervangen.
-                    _ = await DownloadUpdateAsync(versionUrl, latestVersion);
+                    _ = await DownloadUpdateAsync(VersionInfo.versionUrl, latestVersion);
 
                     Environment.Exit(0);
                     // Restart the application
                     Console.WriteLine("The application is restarting...\n\n\n");
                     Thread.Sleep(1000); // Wait a moment
                     // Start a new process to replace the current process
-                    Process.Start(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+                    Process.Start(Environment.ProcessPath);
                     // Exit the current process
                     Environment.Exit(0);
                     return true;
@@ -198,14 +216,14 @@ class Version
                     // Backup van de huidige bestanden
 
                     // Hier zou je de logica moeten toevoegen om de updatebestanden te downloaden en de oude bestanden te vervangen.
-                    _ = await DownloadUpdateAsync(versionUrl, latestVersion);
+                    _ = await DownloadUpdateAsync(VersionInfo.versionUrl, latestVersion);
 
                     Environment.Exit(0);
                     // Restart the application
                     Console.WriteLine("The application is restarting...\n\n\n");
                     Thread.Sleep(1000); // Wait a moment
                     // Start a new process to replace the current process
-                    Process.Start(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+                    Process.Start(Environment.ProcessPath);
                     // Exit the current process
                     Environment.Exit(0);
                     return true;
@@ -285,7 +303,7 @@ class Version
             // Gebruik FileStream om het bestand te schrijven
             using (FileStream fileStream = new(updateFilePath, FileMode.Create, FileAccess.Write))
             {
-                await fileStream.WriteAsync(updateBytes, 0, updateBytes.Length);
+                await fileStream.WriteAsync(updateBytes);
                 await fileStream.FlushAsync();
             }
 
@@ -330,7 +348,7 @@ class Version
     static void StartHelpApp(string beginPath, string destinationPath, string installDir)
     {
         string helperAppPath = Path.Combine(installDir, "program", "helpapp.bat");
-        string starterProgram = Environment.ProcessPath;
+        string starterProgram = Environment.ProcessPath ?? Environment.GetCommandLineArgs()[0] ?? Path.Combine(installDir, "program", "MessageTestBlank1.exe");
         Process.Start(helperAppPath, $"{beginPath} {destinationPath} \"{starterProgram}\" false");
         Environment.Exit(0);
     }
@@ -375,7 +393,7 @@ class Version
                     DEBUGGER.LogDebug("Test 4");
 
                     // Krijg toegang tot de directory en pas de nieuwe machtigingen toe
-                    DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                    DirectoryInfo directoryInfo = new(path);
 
                     LogDebug("Test 5");
 
