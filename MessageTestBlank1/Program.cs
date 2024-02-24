@@ -45,7 +45,15 @@ class Program
                     case "--debug":
                         // Enable debug mode
                         Console.WriteLine("Debug mode (debug lines get logged)");
-                        DebugLogMode(1);
+                        if (logMode != LogMode.LogWithLines)
+                        {
+                            DebugLogMode(1); 
+                        }
+                        break;
+                    case "--debugloglines":
+                        // Enable debug mode
+                        Console.WriteLine("Debug mode with numbers (debug lines get logged with line numbers)");
+                        DebugLogMode(3);
                         break;
                     case "--forceinstall": //--forceInstall to lowercase
                         forceInstall = true;
@@ -98,6 +106,8 @@ class Program
         Process.Start(make_shortcutStartInfo);
 
 
+        LogDebug(VersionInfo.currentVersion);
+
 
         _ = await CheckUpdatesAsync(forceInstall); // Werkt eindelijk
 
@@ -105,12 +115,6 @@ class Program
 
 
 
-        /*while (!canClose)
-        {
-            // Wacht totdat canClose true wordt
-            await Task.Delay(50);
-        }
-        Environment.Exit(0);*/
 
         while (true)
         {
@@ -147,10 +151,23 @@ class Program
 }
 static class VersionInfo
 {
-    public static readonly string currentVersion = "0.1.2";
+    public static readonly string currentVersion = "0.1.3";
     public static string versionUrl = "https://site-mm.000webhostapp.com/v/";
     public static bool debug = false;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #pragma warning disable CA1050 // Declare types in namespaces
@@ -537,13 +554,14 @@ class Version
 
 class DEBUGGER
 {
-    private static LogMode logMode = LogMode.Auto;
+    public static LogMode logMode = LogMode.Auto;
 
     public enum LogMode
     {
         Skip = 0,
         Log = 1,
-        Auto = 2
+        Auto = 2,
+        LogWithLines = 3
     }
     public static void LogDebug(string message, bool forceLog = false, bool logLineNumber = false)
     {
@@ -571,6 +589,10 @@ class DEBUGGER
 #if DEBUG
             Console.WriteLine($"DEBUG; {message} at line {lineNumber}");
 #endif
+        }
+        else if (logMode == LogMode.LogWithLines)
+        {
+            Console.WriteLine($"DEBUG; {message} at line {lineNumber}");
         }
     }
 
