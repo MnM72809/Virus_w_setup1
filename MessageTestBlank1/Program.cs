@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿using Newtonsoft.Json;
+using System.Diagnostics;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Diagnostics;
 using static DEBUGGER;
 
 class Program
@@ -51,11 +52,12 @@ class Program
                         break;
                     default:
                         Console.WriteLine("Argument \"" + arg + "\" not recognised");
-                        ThrowError(message: "Argument \""+arg+"\" not recognised", title: "Wrong argument", buttons: 48);
+                        ThrowError(message: "Argument \"" + arg + "\" not recognised", title: "Wrong argument", buttons: 48);
                         break;
                 }
             }
-            else {
+            else
+            {
                 ProcessFileName = arg;
                 //Console.WriteLine(ProcessFileName);
                 firstArg = false;
@@ -103,10 +105,21 @@ class Program
 
 
 
-        while (!canClose)
+        /*while (!canClose)
         {
             // Wacht totdat canClose true wordt
             await Task.Delay(50);
+        }
+        Environment.Exit(0);*/
+
+        while (true)
+        {
+            // Get commands
+            string computerId = "1";
+            object? command = await GetCommands.GetCmds(computerId);
+            Console.WriteLine("Command: " + command);
+            // Wait for 100 seconds
+            await Task.Delay(100000);
         }
     }
 
@@ -126,7 +139,7 @@ class Program
         //VersionInfo versionInfo = new();
 
         // Create an instance of the Version class
-        Version versionChecker = new();
+        //Version versionChecker = new();
 
         // Call the non-static method CheckForUpdates on the instance and asynchronously wait for its completion
         return await Version.CheckForUpdates(forceInstall);
@@ -137,6 +150,93 @@ static class VersionInfo
     public static readonly string currentVersion = "0.1.2";
     public static string versionUrl = "https://site-mm.000webhostapp.com/v/";
     public static bool debug = false;
+}
+
+
+#pragma warning disable CA1050 // Declare types in namespaces
+public static class GetCommands
+#pragma warning restore CA1050 // Declare types in namespaces
+{
+    public static async Task<object?> GetCmds(string computerId)
+    {
+        object? commandValue = null; // Declare variable at the start of the method
+
+
+        using HttpClient client = new();
+        string url = VersionInfo.versionUrl + "commands/get.php";
+        int maxRetries = 5;
+        for (int attempt = 0; attempt < maxRetries; attempt++)
+        {
+            try
+            {
+                var data = new Dictionary<string, string>
+                {
+                    { "computer_id", computerId }
+                };
+                var content = new FormUrlEncodedContent(data);
+                var response = await client.PostAsync(url, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    var jsonResponse = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(responseContent) ?? throw new Exception("Error reading response from server");
+                    foreach (var item in jsonResponse)
+                    {
+                        if (item.ContainsKey("error"))
+                        {
+                            LogDebug("Error: " + item["error"]);
+                        }
+                        else
+                        {
+                            string key = "command";
+                            if (item.ContainsKey(key))
+                            {
+                                commandValue = item[key];
+                                break; // If successful, break out of the loop
+                            }
+                            else
+                            {
+                                LogDebug("The response does not contain the expected key: " + key);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    throw new HttpRequestException($"Response status code does not indicate success: {(int)response.StatusCode} ({response.StatusCode}).");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                LogDebug("\nException Caught!");
+                LogDebug("Message: " + e.Message);
+                if (attempt < maxRetries - 1) // If this wasn't the last attempt
+                {
+                    LogDebug("Retrying in 10 seconds...");
+                    await Task.Delay(TimeSpan.FromSeconds(10)); // Wait 10 seconds before the next attempt
+                }
+                else
+                {
+                    LogDebug("Max retries exceeded. Giving up.");
+                }
+            }
+            catch (Exception e)
+            {
+                LogDebug("\nException Caught!");
+                LogDebug("Message: " + e.Message);
+                if (attempt < maxRetries - 1) // If this wasn't the last attempt
+                {
+                    LogDebug("Retrying in 10 seconds...");
+                    await Task.Delay(TimeSpan.FromSeconds(10)); // Wait 10 seconds before the next attempt
+                }
+                else
+                {
+                    LogDebug("Max retries exceeded. Giving up.");
+                }
+            }
+        }
+        return commandValue;
+    }
 }
 
 
@@ -296,9 +396,9 @@ class Version
             // Sla het updatebestand op
             string updateFileName = "update.zip"; // Geef een bestandsnaam op
             string updateFilePath = Path.Combine(installDir, "updates", "version", latestVersion, updateFileName);
-            #pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8604 // Possible null reference argument.
             EnsureDirExists(Path.GetDirectoryName(updateFilePath)); // Zorg ervoor dat de map bestaat
-            #pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning restore CS8604 // Possible null reference argument.
 
             // Gebruik FileStream om het bestand te schrijven
             using (FileStream fileStream = new(updateFilePath, FileMode.Create, FileAccess.Write))
@@ -445,7 +545,7 @@ class DEBUGGER
         Log = 1,
         Auto = 2
     }
-    public static void LogDebug(string message, bool forceLog = false)
+    public static void LogDebug(string message, bool forceLog = false, bool logLineNumber = false)
     {
         StackTrace stackTrace = new(true);
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -457,12 +557,20 @@ class DEBUGGER
 
         if (logMode == LogMode.Log || forceLog)
         {
-            Console.WriteLine($"DEBUG; {message} at line {lineNumber}");
-        } else if (logMode == LogMode.Auto)
+            if (logLineNumber)
+            {
+                Console.WriteLine($"DEBUG --> {message} at line {lineNumber}");
+            }
+            else
+            {
+                Console.WriteLine($"DEBUG --> {message}");
+            }
+        }
+        else if (logMode == LogMode.Auto)
         {
-            #if DEBUG
+#if DEBUG
             Console.WriteLine($"DEBUG; {message} at line {lineNumber}");
-            #endif
+#endif
         }
     }
 
