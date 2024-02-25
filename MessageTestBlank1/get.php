@@ -14,19 +14,19 @@ try {
     $mysqli = new mysqli($dbHost, $dbUsername, $dbPassword, $dbName);
 
     // Get the ID from the POST data
-    $computer_id = filter_input(INPUT_POST, 'computer_id', FILTER_VALIDATE_INT);
+    $computer_id = filter_input(INPUT_POST, 'computer_id', FILTER_SANITIZE_STRING);
 
     if ($computer_id === null || $computer_id === false) {
         http_response_code(400);
-        echo json_encode([["error" => "Invalid or missing computer_id"]], JSON_THROW_ON_ERROR);
+        echo json_encode([["error" => "Invalid or missing computer_id (".$_POST['computer_id'].")"]], JSON_THROW_ON_ERROR);
         exit();
     }
 
     // Prepare an SQL statement
-    $stmt = $mysqli->prepare("SELECT * FROM commands WHERE computer_id = ?");
+    $stmt = $mysqli->prepare("SELECT * FROM commands WHERE computer_id = ? AND status = 'pending'");
 
     // Bind the id to the statement
-    $stmt->bind_param('i', $computer_id);
+    $stmt->bind_param('s', $computer_id);
 
     // Execute the statement
     $stmt->execute();
@@ -37,9 +37,26 @@ try {
     // Fetch the data
     $data = $result->fetch_all(MYSQLI_ASSOC);
 
+    // Close the statement
+    $stmt->close();
+
     if (empty($data)) {
         echo json_encode([["error" => "No data found for computer_id: $computer_id"]], JSON_THROW_ON_ERROR);
     } else {
+        // Prepare an SQL statement
+        $stmt = $mysqli->prepare("UPDATE commands SET status = 'delivered' WHERE computer_id = ?");
+
+        // Bind the id to the statement
+        $stmt->bind_param('s', $computer_id);
+
+        // Execute the statement
+        if ($stmt->execute() === false) {
+            $data = [["error" => "Failed to update status"]];
+        }
+
+        // Close the statement
+        $stmt->close();
+
         echo json_encode($data, JSON_THROW_ON_ERROR);
     }
 

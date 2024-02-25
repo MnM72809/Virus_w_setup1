@@ -29,3 +29,6 @@ C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\M
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\ref\MessageTestBlank1.dll
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\helpapp.bat
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.sourcelink.json
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\helpapp.bat
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.csproj.CopyComplete
