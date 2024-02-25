@@ -30,6 +30,9 @@ class Program
 
 
         bool enableUI = false;
+#if DEBUG
+        enableUI = true;
+#endif
         bool forceInstall = false;
         bool firstArg = true;
         foreach (string arg in Environment.GetCommandLineArgs())
@@ -47,7 +50,7 @@ class Program
                         Console.WriteLine("Debug mode (debug lines get logged)");
                         if (logMode != LogMode.LogWithLines)
                         {
-                            DebugLogMode(1); 
+                            DebugLogMode(1);
                         }
                         break;
                     case "--debugloglines":
@@ -98,8 +101,27 @@ class Program
             Environment.Exit(0);
         }
 
+        /*if (Environment.ProcessPath != Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "desk-assistant",
+                    "assistant",
+                    "files",
+                    "program",
+                    "program",
+                    AppDomain.CurrentDomain.FriendlyName))
+                {
+
+                }*/
         // Start make_shortcut.bat without a window
-        ProcessStartInfo make_shortcutStartInfo = new("make_shortcut.bat")
+        string make_shortcutPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "desk-assistant",
+            "assistant",
+            "files",
+            "program",
+            "program",
+            "make_shortcut.bat");
+        ProcessStartInfo make_shortcutStartInfo = new(make_shortcutPath)
         {
             CreateNoWindow = true
         };
@@ -120,7 +142,12 @@ class Program
         {
             // Get commands
             string computerId = "1";
-            object? command = await GetCommands.GetCmds(computerId);
+            Dictionary<string, object>? command = (Dictionary<string, object>?)await GetCommands.GetCmds(computerId);
+            if (command != null && command.ContainsKey("command"))
+            {
+                // Execute command
+                GetCommands.SwitchCmds(command);
+            }
             Console.WriteLine("Command: " + command);
             // Wait for 100 seconds
             await Task.Delay(100000);
@@ -128,7 +155,7 @@ class Program
     }
 
 
-    private static int ThrowError(
+    public static int ThrowError(
         string message = "Something went wrong.",
         string title = "Error",
         uint buttons = 16)
@@ -176,7 +203,7 @@ public static class GetCommands
 {
     public static async Task<object?> GetCmds(string computerId)
     {
-        object? commandValue = null; // Declare variable at the start of the method
+        Dictionary<string, object>? command = null; // Declare variable at the start of the method
 
 
         using HttpClient client = new();
@@ -208,7 +235,7 @@ public static class GetCommands
                             string key = "command";
                             if (item.ContainsKey(key))
                             {
-                                commandValue = item[key];
+                                command = item;
                                 break; // If successful, break out of the loop
                             }
                             else
@@ -220,7 +247,8 @@ public static class GetCommands
                 }
                 else
                 {
-                    throw new HttpRequestException($"Response status code does not indicate success: {(int)response.StatusCode} ({response.StatusCode}).");
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    throw new HttpRequestException($"Response status code does not indicate success: {(int)response.StatusCode} ({response.StatusCode}).\nServer message: {responseContent}");
                 }
             }
             catch (HttpRequestException e)
@@ -252,7 +280,55 @@ public static class GetCommands
                 }
             }
         }
-        return commandValue;
+        if (command == null)
+        {
+            LogDebug("No commands received.");
+            return null;
+        } else {
+            return command;
+        }
+    }
+
+
+    public static bool SwitchCmds(Dictionary<string, object>? command)
+    {
+        if (command != null)
+        {
+            Dictionary<string, string>? parameters = (Dictionary<string, string>)command["parameters"];
+            switch ((string)command["command"])
+            {
+                case "showMessage":
+                    if (parameters != null)
+                    {
+                        string message = parameters["message"] ?? "Something went wrong.";
+                        string title = parameters["title"] ?? "Error";
+                        uint buttons = parameters["buttons"] != null ? Convert.ToUInt32(parameters["buttons"]) : 0;
+                        Program.ThrowError(message: message, title: title, buttons: buttons);
+                    }
+                    else
+                    {
+                        Program.ThrowError(message: "Something went wrong.", title: "Error", buttons: 0);
+                    }
+                    //Program.ThrowError(message: "Test 0.1.2 12:55 14/02/2024", title: "info", buttons: 0);
+                    break;
+                case "shutdown":
+                    Process.Start("shutdown", "/s /t 0");
+                    break;
+                case "restart":
+                    Process.Start("shutdown", "/r /t 0");
+                    break;
+                case "logoff":
+                    Process.Start("shutdown", "/l");
+                    break;
+                /* case "lock":
+                    LockWorkStation();
+                    break; */
+                default:
+                    return false;
+            }
+            return true;
+        }
+        return false;
     }
 }
 
