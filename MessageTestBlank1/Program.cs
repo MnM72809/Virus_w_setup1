@@ -24,6 +24,8 @@ class Program
     //    }
     //}
 
+    public static string? computerId = null;
+
     static async Task Main()
     {
         DebugLogMode();
@@ -35,6 +37,7 @@ class Program
 #endif
         bool forceInstall = false;
         bool firstArg = true;
+        bool setId = false;
         foreach (string arg in Environment.GetCommandLineArgs())
         {
             if (!firstArg)
@@ -60,6 +63,10 @@ class Program
                         break;
                     case "--forceinstall": //--forceInstall to lowercase
                         forceInstall = true;
+                        break;
+                    case "--setid":
+                        // Set computer ID
+                        setId = true;
                         break;
                     default:
                         Console.WriteLine("Argument \"" + arg + "\" not recognised");
@@ -125,10 +132,85 @@ class Program
         {
             CreateNoWindow = true
         };
-        Process.Start(make_shortcutStartInfo);
+        if (File.Exists(make_shortcutPath))
+        {
+            Process.Start(make_shortcutStartInfo);
+        }
+        else
+        {
+            await Version.CheckForUpdates(true);
+        }
 
 
         LogDebug(VersionInfo.currentVersion);
+
+
+        Dictionary<string, object>? configInfo = null;
+        string computer_id_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                   "desk-assistant",
+                                   "assistant",
+                                   "files",
+                                   "program",
+                                   "program",
+                                   "config.json");
+        try
+        {
+            if (!File.Exists(computer_id_path))
+            {
+                File.WriteAllText(computer_id_path, "{\"computer_id\": null}");
+            }
+
+            string jsonString = File.ReadAllText(computer_id_path);
+            configInfo = JsonConvert.DeserializeObject<Dictionary<string, object>?>(jsonString);
+
+            if (configInfo != null && configInfo.ContainsKey("computer_id") && configInfo["computer_id"] is string)
+            {
+                computerId = (string)configInfo["computer_id"];
+            }
+            else
+            {
+                LogDebug("Computer ID not found in config file.");
+            }
+
+            if (setId && enableUI)
+            {
+                Console.WriteLine(computerId == null ? "Do you want to set the computer ID? (Y/N)" : $"Set computer ID: {computerId}\nDo you want to change it? (Y/N)");
+                if (Console.ReadLine()?.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase) ?? false)
+                {
+                    string? readline = Console.ReadLine();
+                    computerId = readline ?? throw new ArgumentException("No input received for computerId");
+                    File.WriteAllText(computer_id_path, "{\"computer_id\": \"" + computerId + "\"}");
+                }
+            }
+        }
+        catch (JsonException ex)
+        {
+            LogDebug("Error deserializing config file: " + ex.Message);
+        }
+        catch (IOException ex)
+        {
+            LogDebug("File error: " + ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            LogDebug("Access error: " + ex.Message);
+        }
+        catch (Exception ex)
+        {
+            LogDebug("Error: " + ex.Message);
+        }
+
+        if (computerId == null)
+        {
+            LogDebug("Computer ID not found. Setting computer ID to default value.");
+            computerId = "default";
+        }
+
+
+
+
+
+
 
 
         _ = await CheckUpdatesAsync(forceInstall); // Werkt eindelijk
@@ -137,20 +219,18 @@ class Program
 
 
 
-
+        //string computerId = GetCommands.GetId() ?? throw new Exception("Error getting computer ID");
         while (true)
         {
             // Get commands
-            string computerId = "1";
             Dictionary<string, object>? command = (Dictionary<string, object>?)await GetCommands.GetCmds(computerId);
             if (command != null && command.ContainsKey("command"))
             {
                 // Execute command
                 GetCommands.SwitchCmds(command);
             }
-            Console.WriteLine("Command: " + command);
-            // Wait for 100 seconds
-            await Task.Delay(100000);
+            // Wait for 30 seconds
+            await Task.Delay(30000);
         }
     }
 
@@ -160,7 +240,7 @@ class Program
         string title = "Error",
         uint buttons = 16)
     {
-        return MessageBox(IntPtr.Zero, message, title, buttons);
+        return MessageBox(IntPtr.Zero, message, title, buttons + 4096);
     }
 
 
@@ -178,7 +258,7 @@ class Program
 }
 static class VersionInfo
 {
-    public static readonly string currentVersion = "0.1.4";
+    public static readonly string currentVersion = "0.1.5";
     public static string versionUrl = "https://site-mm.000webhostapp.com/v/";
     public static bool debug = false;
 }
@@ -284,7 +364,9 @@ public static class GetCommands
         {
             LogDebug("No commands received.");
             return null;
-        } else {
+        }
+        else
+        {
             return command;
         }
     }
@@ -294,15 +376,15 @@ public static class GetCommands
     {
         if (command != null)
         {
-            Dictionary<string, string>? parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>((string)command["parameters"]);
+            Dictionary<string, string>? parameters = command["parameters"] != null ? JsonConvert.DeserializeObject<Dictionary<string, string>>((string)command["parameters"]) : null;
             switch ((string)command["command"])
             {
                 case "showMessage":
                     if (parameters != null)
                     {
-                        string message = parameters["message"] ?? "Something went wrong.";
-                        string title = parameters["title"] ?? "Error";
-                        uint buttons = parameters["buttons"] != null ? Convert.ToUInt32(parameters["buttons"]) : 0;
+                        string message = parameters.ContainsKey("message") ? parameters["message"] : "Something went wrong.";
+                        string title = parameters.ContainsKey("title") ? parameters["title"] : "Error";
+                        uint buttons = parameters.ContainsKey("buttons") && uint.TryParse(parameters["buttons"], out uint buttonValue) ? buttonValue : 0;
                         Program.ThrowError(message: message, title: title, buttons: buttons);
                     }
                     else
@@ -320,17 +402,23 @@ public static class GetCommands
                 case "logoff":
                     Process.Start("shutdown", "/l");
                     break;
-                /* case "lock":
+                case "lock":
+                    [DllImport("user32.dll", SetLastError = true)]
+                    static extern bool LockWorkStation();
                     LockWorkStation();
-                    break; */
+                    break;
                 default:
                     return false;
             }
+            Console.WriteLine("Command: " + (string)command["command"] + " --- Parameters: " + (string)command["parameters"]);
             return true;
         }
         return false;
     }
 }
+
+
+
 
 
 
@@ -454,17 +542,17 @@ class Version
             using HttpClient client = new();
 
             // DEBUG
-            LogDebug("Function DownloadUpdateAsync before installdir");
+            LogDebug("\n\n\nUpdating...\n");
 
             string installDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "desk-assistant", "assistant", "files", "program");
-            DEBUGGER.LogDebug("installDir: " + installDir);
+            LogDebug("install directory: " + installDir);
             //Console.WriteLine($"Proceed? (Y/N) installDir: {installDir}");
-            string response = "Y"; //Console.ReadLine() ?? "N";
+            /* string response = "Y"; //Console.ReadLine() ?? "N";
             if (!(response != null && response.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase)))
             {
                 Console.WriteLine("Exiting program...");
-                System.Environment.Exit(0);
-            }
+                Environment.Exit(0);
+            } */
             if (!EnsureDirExists(installDir))
             {
                 LogDebug("installDir doesn't exist yet");
@@ -478,12 +566,12 @@ class Version
 
 
 
-            LogDebug("Function DownloadUpdateAsync after installdir, before downloading");
+            LogDebug("Downloading update...");
 
             // Download het updatebestand
             byte[] updateBytes = await client.GetByteArrayAsync(versionUrl + "data/newest/update.zip");
 
-            LogDebug("Function DownloadUpdateAsync after downloading, before saving");                                                            //------------------------------------------------------------------------------
+            LogDebug("Saving files...");                                                            //------------------------------------------------------------------------------
 
 
             // Sla het updatebestand op
@@ -501,32 +589,32 @@ class Version
             }
 
 
-            LogDebug("Function DownloadUpdateAsync after saving, before exrtacting");
+            LogDebug("Extracting update...");
 
             // Uitpakken van het zip-bestand
             string extractpath = Path.Combine(installDir, "temp", "update");
             Console.WriteLine("");
-            LogDebug("TEST After extractPath");
+            //LogDebug("TEST After extractPath");
             if (Directory.Exists(extractpath))
             {
                 Directory.Delete(extractpath, true);
             }
-            LogDebug("TEST After deleting temp");
+            //LogDebug("TEST After deleting temp");
             EnsureDirExists(extractpath);
-            LogDebug("TEST After EnsureDirExists");
+            //LogDebug("TEST After EnsureDirExists");
             ExtractZip(updateFilePath, extractpath);
-            LogDebug("TEST After Extracting");
-            Console.WriteLine("");
+            //LogDebug("TEST After Extracting");
+            //Console.WriteLine("");
 
-            LogDebug("Function DownloadUpdateAsync after extracting");
+            //LogDebug("Function DownloadUpdateAsync after extracting");
 
             string destinationPath = Path.Combine(installDir, "program");
 
-            LogDebug("Installing helpapp.bat...");
+            LogDebug("\nInstalling helpapp.bat...");
             File.Copy(Path.Combine(extractpath, "helpapp.bat"), Path.Combine(destinationPath, "helpapp.bat"), true);
 
             // Logica om de oude bestanden te vervangen
-            Console.WriteLine("Update is downloaded and extracted. Applying update...");
+            Console.WriteLine("\n\n\nUpdate is downloaded and extracted. Applying update...");
             StartHelpApp(extractpath, destinationPath, installDir);
             Environment.Exit(0);
             return true;
@@ -569,21 +657,21 @@ class Version
             {
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 {
-                    DEBUGGER.LogDebug("Test 1");
+                    LogDebug("Test 1");
                     // Maak een nieuwe DirectorySecurity-object om de machtigingen te beheren
                     DirectorySecurity directorySecurity = new();
 
-                    DEBUGGER.LogDebug("Test 2");
+                    LogDebug("Test 2");
 
                     // Krijg de SID voor de "Everyone" groep
                     SecurityIdentifier everyoneSid = new(WellKnownSidType.WorldSid, null);
 
-                    DEBUGGER.LogDebug("Test 3");
+                    LogDebug("Test 3");
 
                     // Voeg de gewenste machtigingen toe (bijv. schrijfmachtigingen voor iedereen)
                     directorySecurity.AddAccessRule(new FileSystemAccessRule(everyoneSid, FileSystemRights.Write, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
 
-                    DEBUGGER.LogDebug("Test 4");
+                    LogDebug("Test 4");
 
                     // Krijg toegang tot de directory en pas de nieuwe machtigingen toe
                     DirectoryInfo directoryInfo = new(path);
