@@ -2,14 +2,12 @@ C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTest
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\MessageTestBlank1.deps.json
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\MessageTestBlank1.runtimeconfig.json
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\MessageTestBlank1.dll
-C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\MessageTestBlank1.pdb
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.AssemblyInfoInputs.cache
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.AssemblyInfo.cs
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.csproj.CoreCompileInputs.cache
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.dll
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\refint\MessageTestBlank1.dll
-C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.pdb
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.genruntimeconfig.cache
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\ref\MessageTestBlank1.dll
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\MessageTestBlank1.exe
@@ -32,3 +30,6 @@ C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTest
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\helpapp.bat
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\Newtonsoft.Json.dll
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.csproj.CopyComplete
+C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.csproj.AssemblyReference.cache
+C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageT.EE82F01E.Up2Date
