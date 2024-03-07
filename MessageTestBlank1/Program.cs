@@ -32,10 +32,15 @@ class Program
 
 
         bool enableUI = false;
+        bool forceInstall = false;
 #if DEBUG
         enableUI = true;
+        Console.WriteLine("Do you want to force install the update? (Y/N)");
+        if (Console.ReadLine()?.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase) ?? false)
+        {
+            forceInstall = true;
+        }
 #endif
-        bool forceInstall = false;
         bool firstArg = true;
         bool setId = false;
         foreach (string arg in Environment.GetCommandLineArgs())
@@ -527,7 +532,9 @@ class Version
         return false;
     }
 
-    static bool IsUpdateAvailable(string currentVersion, string latestVersion)
+    static bool IsUpdateAvailable(
+        string currentVersion,
+        string latestVersion)
     {
         // Voer hier logica uit om te bepalen of een update beschikbaar is
         // Dit kan bijvoorbeeld een vergelijking van versienummers zijn.
@@ -569,8 +576,51 @@ class Version
 
             LogDebug("Downloading update...");
 
-            // Download het updatebestand
-            byte[] updateBytes = await client.GetByteArrayAsync(versionUrl + "data/newest/update.zip");
+            var progress = new Progress<double>();
+            double previousProgress = -1;
+            DateTime lastUpdate = DateTime.MinValue;
+            //int totalBlocks = 40;
+            int totalBlocks = Console.WindowWidth - 10;
+
+            // Store the original console color
+            ConsoleColor originalColor = Console.ForegroundColor;
+
+            progress.ProgressChanged += (s, e) =>
+            {
+                // Only update the progress bar if the percentage has changed and at least 20 milliseconds have passed
+                if (Math.Floor(e * 2) != Math.Floor(previousProgress * 2) && (DateTime.Now - lastUpdate).TotalMilliseconds > 20)
+                {
+                    // Calculate completed and remaining blocks
+                    int completedBlocks = (int)(e / 100 * totalBlocks);
+                    int remainingBlocks = totalBlocks - completedBlocks;
+
+                    // Construct the progress bar string
+                    string progressBar = $"[{new string('#', completedBlocks)}{new string('-', remainingBlocks)}] {Math.Floor(e)}%";
+
+                    // Change the color of the progress bar based on the progress
+                    Console.ForegroundColor = (e >= 98) ? ConsoleColor.Green : originalColor;
+
+                    // Clear the current line and write the progress bar
+                    Console.Write("\r" + progressBar.PadRight(Console.WindowWidth - 1));
+
+                    // Reset the color back to the original color
+                    if (e >= 98)
+                    {
+                        Console.ForegroundColor = originalColor;
+                    }
+
+                    // Update previous progress and last update time
+                    previousProgress = e;
+                    lastUpdate = DateTime.Now;
+                }
+            };
+
+            //Console.ForegroundColor = originalColor;
+            Console.Write("\n");
+
+
+            // Download the update file
+            byte[] updateBytes = await DownloadDataWithProgress(versionUrl + "data/newest/update.zip", progress);
 
             LogDebug("Saving files...");                                                            //------------------------------------------------------------------------------
 
@@ -611,7 +661,8 @@ class Version
 
             string destinationPath = Path.Combine(installDir, "program");
 
-            LogDebug("\nInstalling helpapp.bat...");
+            LogDebug("Installing helpapp.bat...");
+            EnsureDirExists(destinationPath);
             File.Copy(Path.Combine(extractpath, "helpapp.bat"), Path.Combine(destinationPath, "helpapp.bat"), true);
 
             // Logica om de oude bestanden te vervangen
@@ -624,6 +675,36 @@ class Version
         {
             Console.WriteLine($"Error downloading or applying update: {ex.Message}");
             return false;
+        }
+    }
+
+    static async Task<byte[]> DownloadDataWithProgress(string url, IProgress<double> progress)
+    {
+        using var client = new HttpClient();
+        using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+
+        var contentLength = response.Content.Headers.ContentLength.GetValueOrDefault(-1L);
+        var totalBytes = 0L;
+        var readBuffer = new byte[8192];
+
+        using var download = await response.Content.ReadAsStreamAsync();
+        using var ms = new MemoryStream();
+
+        while (true)
+        {
+            var bytesRead = await download.ReadAsync(readBuffer);
+            if (bytesRead == 0)
+            {
+                return ms.ToArray();
+            }
+
+            await ms.WriteAsync(readBuffer, 0, bytesRead);
+            totalBytes += bytesRead;
+
+            if (contentLength != -1L)
+            {
+                progress.Report((totalBytes / (double)contentLength) * 100);
+            }
         }
     }
 
