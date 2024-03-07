@@ -208,7 +208,7 @@ class Program
 
         if (computerId == null)
         {
-            LogDebug("Computer ID not found. Setting computer ID to default value.");
+            LogDebug("Computer ID not found. Setting computer ID to default value. (\"default\")");
             computerId = "default";
         }
 
@@ -476,15 +476,14 @@ class Version
             if (IsUpdateAvailable(VersionInfo.currentVersion, latestVersion))
             {
                 Console.WriteLine($"A new version is available: {latestVersion}");
-                Console.WriteLine("Do you want to install it? (Y/N)");
 
                 // Voer hier logica uit om de update toe te passen indien gewenst
                 //string response = Console.ReadLine() ?? "N";
-                string response = "Y";
+                //string response = "Y";
 
-                if (response != null && response.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.WriteLine("The update is being applied...");
+                //if (response != null && response.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase))
+                //{
+                    Console.WriteLine("Installing update...\n");
                     // Download de update
                     // Backup van de huidige bestanden
 
@@ -493,22 +492,22 @@ class Version
 
                     Environment.Exit(0);
                     // Restart the application
-                    Console.WriteLine("The application is restarting...\n\n\n");
-                    Thread.Sleep(1000); // Wait a moment
+                    //Console.WriteLine("The application is restarting...\n\n\n");
+                    //Thread.Sleep(1000); // Wait a moment
                     // Start a new process to replace the current process
-                    Process.Start(Environment.ProcessPath);
+                    //Process.Start(Environment.ProcessPath);
                     // Exit the current process
-                    Environment.Exit(0);
+                    //Environment.Exit(0);
                     return true;
-                }
-                else
-                {
-                    Console.WriteLine("De update is geannuleerd.");
-                }
+                //}
+                //else
+                //{
+                //    Console.WriteLine("De update is geannuleerd.");
+                //}
             }
             else
             {
-                Console.WriteLine("You have the newest version. Do you want to install it anyways? (Y/N)");
+                Console.WriteLine("You have the newest version.");
 
                 // Voer hier logica uit om de update toe te passen indien gewenst
                 //string response = Console.ReadLine() ?? "N";
@@ -520,7 +519,7 @@ class Version
 
                 if (response != null && response.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine("The update is being applied...");
+                    Console.WriteLine("Updating anyway...\n");
                     // Download de update
                     // Backup van de huidige bestanden
 
@@ -529,23 +528,23 @@ class Version
 
                     Environment.Exit(0);
                     // Restart the application
-                    Console.WriteLine("The application is restarting...\n\n\n");
-                    Thread.Sleep(1000); // Wait a moment
+                    //Console.WriteLine("The application is restarting...\n\n\n");
+                    //Thread.Sleep(1000); // Wait a moment
                     // Start a new process to replace the current process
-                    Process.Start(Environment.ProcessPath);
+                    //Process.Start(Environment.ProcessPath);
                     // Exit the current process
-                    Environment.Exit(0);
+                    //Environment.Exit(0);
                     return true;
                 }
                 else
                 {
-                    Console.WriteLine("De update is geannuleerd.");
+                    Console.WriteLine("Update canceled.");
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Fout bij het controleren op updates: {ex.Message}");
+            Console.WriteLine($"Error while checking for updates: {ex.Message}");
         }
         finally
         {
