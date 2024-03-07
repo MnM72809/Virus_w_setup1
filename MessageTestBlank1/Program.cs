@@ -241,6 +241,13 @@ class Program
     }
 
 
+    /// <summary>
+    /// Shows a message in a message box.
+    /// </summary>
+    /// <param name="message">The error message to display. Default value is "Something went wrong."</param>
+    /// <param name="title">The title of the message box. Default value is "Error".</param>
+    /// <param name="buttons">The buttons to display in the message box. Default value is 16 (OK button).</param>
+    /// <returns>The result of the message box operation.</returns>
     public static int ThrowError(
         string message = "Something went wrong.",
         string title = "Error",
@@ -287,10 +294,14 @@ static class VersionInfo
 public static class GetCommands
 #pragma warning restore CA1050 // Declare types in namespaces
 {
+    /// <summary>
+    /// Retrieves the commands for a specific computer.
+    /// </summary>
+    /// <param name="computerId">The ID of the computer.</param>
+    /// <returns>The dictionary containing the commands, or null if no commands are received.</returns>
     public static async Task<object?> GetCmds(string computerId)
     {
         Dictionary<string, object>? command = null; // Declare variable at the start of the method
-
 
         using HttpClient client = new();
         string url = VersionInfo.versionUrl + "commands/get.php";
@@ -378,6 +389,11 @@ public static class GetCommands
     }
 
 
+    /// <summary>
+    /// Executes the command given in the command dictionary.
+    /// </summary>
+    /// <param name="command">The command dictionary.</param>
+    /// <returns>Returns true if the command was successfully executed; otherwise, false.</returns>
     public static bool SwitchCmds(Dictionary<string, object>? command)
     {
         if (command != null)
@@ -435,9 +451,15 @@ public static class GetCommands
 
 class Version
 {
+    /// <summary>
+    /// Checks for updates and applies them if necessary.
+    /// </summary>
+    /// <param name="forceInstall">Indicates whether to force the installation of updates.</param>
+    /// <returns>True if updates were checked and applied successfully, false otherwise.</returns>
     public static async Task<bool> CheckForUpdates(bool forceInstall = false)
     {
         Program.canClose = false;
+
         try
         {
             if (VersionInfo.debug)
@@ -445,8 +467,8 @@ class Version
                 VersionInfo.versionUrl = "https://site-mm.000webhostapp.com/v/debug/";
             }
 
-
             using HttpClient client = new();
+
             // Haal het versienummer van de nieuwste versie op van de externe bron
             string latestVersion = await client.GetStringAsync(VersionInfo.versionUrl + "version.txt");
 
@@ -529,9 +551,16 @@ class Version
         {
             Program.canClose = true;
         }
+
         return false;
     }
 
+    /// <summary>
+    /// Determines if an update is available based on the current version and the latest version.
+    /// </summary>
+    /// <param name="currentVersion">The current version of the software.</param>
+    /// <param name="latestVersion">The latest version of the software.</param>
+    /// <returns>True if an update is available, false otherwise.</returns>
     static bool IsUpdateAvailable(
         string currentVersion,
         string latestVersion)
@@ -543,6 +572,12 @@ class Version
         return string.Compare(currentVersion, latestVersion) < 0;
     }
 
+    /// <summary>
+    /// Downloads the update asynchronously, and installs it.
+    /// </summary>
+    /// <param name="versionUrl">The URL of the version.</param>
+    /// <param name="latestVersion">The latest version.</param>
+    /// <returns>A task representing the asynchronous operation. The task result is a boolean indicating whether the update was downloaded successfully.</returns>
     static async Task<bool> DownloadUpdateAsync(string versionUrl, string latestVersion)
     {
         try
@@ -565,14 +600,6 @@ class Version
             {
                 LogDebug("installDir doesn't exist yet");
             }
-
-
-
-
-
-
-
-
 
             LogDebug("Downloading update...");
 
@@ -615,15 +642,12 @@ class Version
                 }
             };
 
-            //Console.ForegroundColor = originalColor;
             Console.Write("\n");
-
 
             // Download the update file
             byte[] updateBytes = await DownloadDataWithProgress(versionUrl + "data/newest/update.zip", progress);
 
-            LogDebug("Saving files...");                                                            //------------------------------------------------------------------------------
-
+            LogDebug("Saving files...");
 
             // Sla het updatebestand op
             string updateFileName = "update.zip"; // Geef een bestandsnaam op
@@ -639,25 +663,17 @@ class Version
                 await fileStream.FlushAsync();
             }
 
-
             LogDebug("Extracting update...");
 
             // Uitpakken van het zip-bestand
             string extractpath = Path.Combine(installDir, "temp", "update");
             Console.WriteLine("");
-            //LogDebug("TEST After extractPath");
             if (Directory.Exists(extractpath))
             {
                 Directory.Delete(extractpath, true);
             }
-            //LogDebug("TEST After deleting temp");
             EnsureDirExists(extractpath);
-            //LogDebug("TEST After EnsureDirExists");
             ExtractZip(updateFilePath, extractpath);
-            //LogDebug("TEST After Extracting");
-            //Console.WriteLine("");
-
-            //LogDebug("Function DownloadUpdateAsync after extracting");
 
             string destinationPath = Path.Combine(installDir, "program");
 
