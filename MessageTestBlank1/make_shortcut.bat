@@ -39,6 +39,6 @@ cscript /nologo CreateShortcut.vbs
 del CreateShortcut.vbs
 
 
-rem attrib +h "%shortcutPath%"
+attrib -h "%shortcutPath%"
 
 echo Snelkoppeling is aangemaakt op %shortcutPath%
