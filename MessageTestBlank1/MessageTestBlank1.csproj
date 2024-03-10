@@ -36,6 +36,9 @@
     <None Update="helpapp.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="make_shortcut.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="receive.php">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
