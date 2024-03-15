@@ -49,6 +49,12 @@ class Program
             {
                 switch (arg.ToLower())
                 {
+                    case "lowRecouces":
+                        // Enable low resources mode
+                        Console.WriteLine("Low resources mode");
+                        Process currentProcess = Process.GetCurrentProcess();
+                        currentProcess.PriorityClass = ProcessPriorityClass.BelowNormal; // Set lower priority
+                        break;
                     case "--enableui": //--enableUI to lowercase
                         enableUI = true;
                         Console.WriteLine("-------------------- ENABLED CONSOLE UI --------------------");
@@ -72,6 +78,24 @@ class Program
                     case "--setid":
                         // Set computer ID
                         setId = true;
+                        break;
+                    case "--version":
+                        // Show version
+                        Console.WriteLine("Version: " + VersionInfo.currentVersion);
+                        Environment.Exit(0);
+                        break;
+                    case "--help":
+                        // Show help
+                        Console.WriteLine("Help:");
+                        Console.WriteLine("  --enableUI: Enable the console UI");
+                        Console.WriteLine("  --lowRecouces: Enable low resources mode");
+                        Console.WriteLine("  --debug: Enable debug mode");
+                        Console.WriteLine("  --debugLogLines: Enable debug mode with line numbers");
+                        Console.WriteLine("  --forceInstall: Force the installation of updates");
+                        Console.WriteLine("  --setId: Set the computer ID");
+                        Console.WriteLine("  --help: Show this help message");
+                        Console.WriteLine("  --version: Show the version of the program");
+                        Environment.Exit(0);
                         break;
                     default:
                         Console.WriteLine("Argument \"" + arg + "\" not recognised");
@@ -272,7 +296,7 @@ class Program
 static class VersionInfo
 {
     public static readonly string currentVersion = "0.1.5";
-    public static string versionUrl = "https://site-mm.000webhostapp.com/v/";
+    public static string versionUrl = "http://site-mm.rf.gd/v/";
     public static bool debug = false;
 }
 
@@ -399,9 +423,19 @@ public static class GetCommands
         if (command != null)
         {
             Dictionary<string, string>? parameters = command["parameters"] != null ? JsonConvert.DeserializeObject<Dictionary<string, string>>((string)command["parameters"]) : null;
-            switch ((string)command["command"])
+            string commandKey = "command";
+            string? lowerCaseCommand;
+            if (command.ContainsKey(commandKey) && command[commandKey] != null)
             {
-                case "showMessage":
+                lowerCaseCommand = command[commandKey]?.ToString()?.ToLower();
+            }
+            else
+            {
+                return false;
+            }
+            switch (lowerCaseCommand)
+            {
+                case "showmessage":
                     if (parameters != null)
                     {
                         string message = parameters.ContainsKey("message") ? parameters["message"] : "Something went wrong.";
@@ -428,6 +462,9 @@ public static class GetCommands
                     [DllImport("user32.dll", SetLastError = true)]
                     static extern bool LockWorkStation();
                     LockWorkStation();
+                    break;
+                case "forceinstall":
+                    _ = Version.CheckForUpdates(true);
                     break;
                 default:
                     return false;
@@ -483,22 +520,22 @@ class Version
 
                 //if (response != null && response.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase))
                 //{
-                    Console.WriteLine("Installing update...\n");
-                    // Download de update
-                    // Backup van de huidige bestanden
+                Console.WriteLine("Installing update...\n");
+                // Download de update
+                // Backup van de huidige bestanden
 
-                    // Hier zou je de logica moeten toevoegen om de updatebestanden te downloaden en de oude bestanden te vervangen.
-                    _ = await DownloadUpdateAsync(VersionInfo.versionUrl, latestVersion);
+                // Hier zou je de logica moeten toevoegen om de updatebestanden te downloaden en de oude bestanden te vervangen.
+                _ = await DownloadUpdateAsync(VersionInfo.versionUrl, latestVersion);
 
-                    Environment.Exit(0);
-                    // Restart the application
-                    //Console.WriteLine("The application is restarting...\n\n\n");
-                    //Thread.Sleep(1000); // Wait a moment
-                    // Start a new process to replace the current process
-                    //Process.Start(Environment.ProcessPath);
-                    // Exit the current process
-                    //Environment.Exit(0);
-                    return true;
+                Environment.Exit(0);
+                // Restart the application
+                //Console.WriteLine("The application is restarting...\n\n\n");
+                //Thread.Sleep(1000); // Wait a moment
+                // Start a new process to replace the current process
+                //Process.Start(Environment.ProcessPath);
+                // Exit the current process
+                //Environment.Exit(0);
+                return true;
                 //}
                 //else
                 //{
