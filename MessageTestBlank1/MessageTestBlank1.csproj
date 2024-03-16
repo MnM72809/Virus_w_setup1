@@ -8,7 +8,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <PackAsTool>False</PackAsTool>
     <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\Certificates\strong_name_file1.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\Certificates\strong_name_file1.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
   </PropertyGroup>
 
