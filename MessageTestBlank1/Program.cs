@@ -436,6 +436,8 @@ public static class GetCommands
             switch (lowerCaseCommand)
             {
                 case "showmessage":
+                case "showMessage":
+                case "message":
                     if (parameters != null)
                     {
                         string message = parameters.ContainsKey("message") ? parameters["message"] : "Something went wrong.";
@@ -450,21 +452,103 @@ public static class GetCommands
                     //Program.ThrowError(message: "Test 0.1.2 12:55 14/02/2024", title: "info", buttons: 0);
                     break;
                 case "shutdown":
+                case "poweroff":
                     Process.Start("shutdown", "/s /t 0");
                     break;
                 case "restart":
+                case "reboot":
                     Process.Start("shutdown", "/r /t 0");
                     break;
                 case "logoff":
+                case "logout":
                     Process.Start("shutdown", "/l");
                     break;
                 case "lock":
+                case "lockworkstation":
                     [DllImport("user32.dll", SetLastError = true)]
                     static extern bool LockWorkStation();
                     LockWorkStation();
                     break;
                 case "forceinstall":
+                case "checkforupdates":
+                case "update":
+                case "forceupdate":
+                case "install":
                     _ = Version.CheckForUpdates(true);
+                    break;
+            
+                case "openbrowser":
+                case "openwebpage":
+                case "openurl":
+                    const string DefaultUrl = "https://www.google.com";
+                    string urlToOpen = DefaultUrl;
+
+                    if (parameters != null && parameters.ContainsKey("url"))
+                    {
+                        urlToOpen = parameters["url"];
+                    }
+
+                    if (Uri.IsWellFormedUriString(urlToOpen, UriKind.Absolute))
+                    {
+                        try
+                        {
+                            Process.Start(urlToOpen);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Log or handle the exception
+                            Console.WriteLine($"Failed to open URL: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Invalid URL: {urlToOpen}");
+                    }
+                    break;
+                case "killprocess":
+                case "endprocess":
+                case "terminateprocess":
+                    if (parameters != null && parameters.ContainsKey("processname"))
+                    {
+                        string processName = parameters["processname"];
+                        Process[] processes = Process.GetProcessesByName(processName);
+                        foreach (Process process in processes)
+                        {
+                            if (process.ProcessName.ToLower() == processName.ToLower())
+                            {
+                                // Try to send a close message
+                                bool closeMessageSent = process.CloseMainWindow();
+
+                                if (!closeMessageSent)
+                                {
+                                    // If the close message wasn't sent, force close the process
+                                    process.Kill();
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "startprocess":
+                case "runprocess":
+                case "execute":
+                    if (parameters != null && parameters.ContainsKey("processname"))
+                    {
+                        if (parameters.ContainsKey("background") && bool.TryParse(parameters["background"], out bool background) && background)
+                        {
+                            string processNameParam = parameters["processname"];
+                            ProcessStartInfo startInfoParam = new(processNameParam)
+                            {
+                                CreateNoWindow = true
+                            };
+                            Process.Start(startInfoParam);
+                        }
+                        else
+                        {
+                            string processNameParam = parameters["processname"];
+                            ProcessStartInfo startInfoParam = new(processNameParam);
+                            Process.Start(startInfoParam);
+                        }
+                    }
                     break;
                 default:
                     return false;
