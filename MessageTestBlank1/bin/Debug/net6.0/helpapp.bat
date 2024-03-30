@@ -68,7 +68,7 @@ xcopy /s /y /i "%beginPath%\*" "%tempDir%"
 
 rem echo test 10
 
-del "%destinationPath%\*.json" "%destinationPath%\*.dll" "%destinationPath%\*.exe" "%destinationPath%\*.pdb"
+del "%destinationPath%\*.dll" "%destinationPath%\*.exe" "%destinationPath%\*.pdb"
 
 REM Verplaats alle bestanden van de tijdelijke map naar de doelmap
 xcopy /s /y /i "%tempDir%\*" "%destinationPath%"

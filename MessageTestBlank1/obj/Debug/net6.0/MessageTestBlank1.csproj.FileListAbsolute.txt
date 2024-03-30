@@ -14,7 +14,6 @@ C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\M
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\MessageTestBlank1.deps.json
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\MessageTestBlank1.runtimeconfig.json
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\MessageTestBlank1.dll
-C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\MessageTestBlank1.pdb
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.csproj.AssemblyReference.cache
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.AssemblyInfoInputs.cache
@@ -22,7 +21,6 @@ C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\M
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.csproj.CoreCompileInputs.cache
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.dll
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\refint\MessageTestBlank1.dll
-C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.pdb
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.genruntimeconfig.cache
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\ref\MessageTestBlank1.dll
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\helpapp.bat
@@ -33,3 +31,12 @@ C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\M
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\Newtonsoft.Json.dll
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageTestBlank1.csproj.AssemblyReference.cache
 C:\Users\moria\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\obj\Debug\net6.0\MessageT.EE82F01E.Up2Date
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\make_shortcut.bat
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\selenium-manager\linux\selenium-manager
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\selenium-manager\macos\selenium-manager
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\selenium-manager\windows\selenium-manager.exe
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\WebDriver.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\FluentFTP.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\AngleSharp.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\ICSharpCode.SharpZipLib.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\WebDriverManager.dll
