@@ -49,7 +49,7 @@ class Program
         {
             Console.WriteLine(args[i]);
         }
-        
+
         args = SetArgs(args);
         static string[] SetArgs(string[] args)
         {
@@ -62,13 +62,16 @@ class Program
             Console.WriteLine("Set the new arguments, separated by spaces");
             var newArgs = Console.ReadLine()?.Split(' ') ?? new string[0];
 
-            if (args.Length >= 1) {
+            if (args.Length >= 1)
+            {
                 string[] tempArgs = new string[1 + newArgs.Length];
                 tempArgs[0] = args[0];
                 Array.Copy(newArgs, 0, tempArgs, 1, newArgs.Length);
                 args = tempArgs;
                 return args;
-            } else {
+            }
+            else
+            {
                 return newArgs;
             }
         }
@@ -316,7 +319,7 @@ class Program
 
 static class VersionInfo
 {
-    public static readonly string currentVersion = "0.2.1";
+    public static readonly string currentVersion = "0.2.2";
     public static string versionUrl = "http://site-mm.rf.gd/v/";
     public static bool debug = false;
 }
@@ -361,12 +364,22 @@ public static class GetCommands
                 var content = new FormUrlEncodedContent(data);
                 string responseContent = Version.GetPageContent(url + "?" + content.ReadAsStringAsync().Result);
 
-                LogDebug("TEST responseContent: " + responseContent);
+                LogDebug("Response: " + responseContent);
                 var jsonResponse = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(responseContent) ?? throw new Exception("Error reading response from server");
                 foreach (var item in jsonResponse)
                 {
                     if (item.ContainsKey("error"))
                     {
+                        // Check if the 'error' key exists in the item and it's not null
+                        if (item["error"] != null)
+                        {
+                            // Convert the error object to string and check if it contains "No data found"
+                            if (((string)item["error"]).ToLower().Contains("no data found"))
+                            {
+                                // If it does, log the errorr
+                                LogDebug((string)item["error"]);
+                            }
+                        }
                         LogDebug("Error: " + item["error"]);
                     }
                     else
@@ -570,28 +583,38 @@ public static class GetCommands
 
 class Version
 {
-    public static string GetPageContent(string url)
+    public static string GetPageContent(string url, bool verbose = true)
     {
-        Console.WriteLine("\n\nGetting page content...\n");
+        if (verbose) Console.WriteLine("\nGetting page content...");
         IWebDriver driver;
         try
         {
             var edgeOptions = new EdgeOptions();
             edgeOptions.AddArgument("headless"); // Run Edge in headless mode
-            driver = new EdgeDriver(edgeOptions);
+
+            var edgeService = EdgeDriverService.CreateDefaultService();
+            edgeService.HideCommandPromptWindow = true;
+            edgeService.SuppressInitialDiagnosticInformation = true;
+
+            driver = new EdgeDriver(edgeService, edgeOptions);
         }
         catch (WebDriverException webDriverEx)
         {
             try
             {
-                Console.WriteLine("Failed to open Edge, trying to use Chrome... Message: " + webDriverEx.Message);
+                if (verbose) Console.WriteLine("Failed to open Edge, trying to use Chrome... Message: " + webDriverEx.Message);
                 var chromeOptions = new ChromeOptions();
                 chromeOptions.AddArgument("headless"); // Run Chrome in headless mode
-                driver = new ChromeDriver(chromeOptions);
+
+                var chromeService = ChromeDriverService.CreateDefaultService();
+                chromeService.HideCommandPromptWindow = true;
+                chromeService.SuppressInitialDiagnosticInformation = true;
+
+                driver = new ChromeDriver(chromeService, chromeOptions);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Failed to open browser (Selenium). Message: " + ex.Message);
+                if (verbose) Console.WriteLine("Failed to open browser (Selenium). Message: " + ex.Message);
                 return "error";
             }
         }
@@ -605,7 +628,7 @@ class Version
 
         driver.Quit();
 
-        Console.WriteLine("\nPage content received.\n\n");
+        if (verbose) Console.WriteLine("Page content received.\n");
 
         return pageContent;
     }
@@ -640,7 +663,7 @@ class Version
 
             string url = VersionInfo.versionUrl + "version.txt";
             string latestVersion = GetPageContent(url);
-            LogDebug("latestVersion: " + latestVersion);
+            LogDebug("latestVersion: " + latestVersion, true);
 
             // Vergelijk de versienummers
             if (IsUpdateAvailable(VersionInfo.currentVersion, latestVersion))
@@ -661,7 +684,7 @@ class Version
                 // Hier zou je de logica moeten toevoegen om de updatebestanden te downloaden en de oude bestanden te vervangen.
                 _ = DownloadUpdate(VersionInfo.versionUrl, latestVersion);
 
-                Environment.Exit(3762507597);
+                Environment.Exit(0);
                 // Restart the application
                 //Console.WriteLine("The application is restarting...\n\n\n");
                 //Thread.Sleep(1000); // Wait a moment
@@ -971,7 +994,7 @@ class Version
             string latestUpdateFolderPath = Path.GetDirectoryName(toPath) ?? Path.Combine(installDir, "temp", "latestUpdate");
             string reassembledZipDirPath = Path.Combine(latestUpdateFolderPath, "zipFile");
             string reassembledZipFilePath = Path.Combine(reassembledZipDirPath, "update.zip");
-            
+
 
             // Check if 7-Zip is available
             string sevenZipPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "7-Zip", "7z.exe");
@@ -1064,7 +1087,7 @@ class Version
         Environment.Exit(0);
     }
 
-     static void ExtractZip(string zipFilePath, string extractPath)
+    static void ExtractZip(string zipFilePath, string extractPath)
     {
         try
         {
