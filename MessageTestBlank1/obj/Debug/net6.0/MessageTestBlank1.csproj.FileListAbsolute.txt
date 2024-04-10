@@ -40,3 +40,15 @@ C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\M
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\AngleSharp.dll
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\ICSharpCode.SharpZipLib.dll
 C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\WebDriverManager.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\DotNetZip.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\System.Drawing.Common.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\System.Security.Permissions.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\System.Windows.Extensions.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\SharpCompress.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\ZstdSharp.dll
+C:\Users\MichielsMoriaan\OneDrive - KOGEKA\Documents\Programmeren\source\repos\MessageTestBlank1\MessageTestBlank1\bin\Debug\net6.0\7za.exe

@@ -1,9 +1,5 @@
 <?php
 
-/* $computer_id = $_GET['computer_id'];
-echo $computer_id;
-exit(); */
-
 // Enable exception error reporting
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
@@ -19,11 +15,24 @@ try {
 
     // Get the ID from the POST data
     //$computer_id = filter_input(INPUT_GET, 'computer_id', FILTER_SANITIZE_STRING);
-    $computer_id = $_GET['computer_id'];
+    $computer_id = $_GET['computer_id'] ?? null;
+    if (isset($_GET["all"])) {
+        $computer_id = "all";
+
+        // Prepare an SQL statement
+        $stmt = $mysqli->prepare("SELECT * FROM commands");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        echo json_encode($data, JSON_THROW_ON_ERROR);
+        exit;
+    }
 
     if ($computer_id === null || $computer_id === false) {
         http_response_code(400);
-        echo json_encode([["error" => "Invalid or missing computer_id (" . $_POST['computer_id'] . ")"]], JSON_THROW_ON_ERROR);
+        echo json_encode([["error" => "Invalid or missing computer_id (".$_POST['computer_id'].")"]], JSON_THROW_ON_ERROR);
         exit();
     }
 
@@ -45,7 +54,7 @@ try {
     // Close the statement
     $stmt->close();
 
-    if (empty ($data)) {
+    if (empty($data)) {
         echo json_encode([["error" => "No data found for computer_id: $computer_id"]], JSON_THROW_ON_ERROR);
     } else {
         // Prepare an SQL statement

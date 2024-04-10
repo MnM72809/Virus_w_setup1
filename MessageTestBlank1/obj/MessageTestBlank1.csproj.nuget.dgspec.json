@@ -45,6 +45,10 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "DotNetZip": {
+              "target": "Package",
+              "version": "[1.16.0, )"
+            },
             "FluentFTP": {
               "target": "Package",
               "version": "[49.0.2, )"
@@ -55,15 +59,19 @@
             },
             "Selenium.WebDriver": {
               "target": "Package",
-              "version": "[4.18.1, )"
+              "version": "[4.19.0, )"
             },
             "Selenium.WebDriver.ChromeDriver": {
               "target": "Package",
-              "version": "[122.0.6261.11100, )"
+              "version": "[123.0.6312.8600, )"
             },
             "Selenium.WebDriver.MicrosoftDriver": {
               "target": "Package",
               "version": "[17.17134.0, )"
+            },
+            "SharpCompress": {
+              "target": "Package",
+              "version": "[0.36.0, )"
             },
             "WebDriverManager": {
               "target": "Package",

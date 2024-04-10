@@ -15,6 +15,9 @@ using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
 using System.IO.Compression;
 
+using SharpCompress.Common;
+using SharpCompress.Readers;
+
 class Program
 {
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
@@ -319,7 +322,7 @@ class Program
 
 static class VersionInfo
 {
-    public static readonly string currentVersion = "0.2.2";
+    public static readonly string currentVersion = "0.2.3";
     public static string versionUrl = "http://site-mm.rf.gd/v/";
     public static bool debug = false;
 }
@@ -990,48 +993,78 @@ class Version
     {
         try
         {
+            EnsureDirExists(toPath);
             // Path for the reassembled ZIP file
             string latestUpdateFolderPath = Path.GetDirectoryName(toPath) ?? Path.Combine(installDir, "temp", "latestUpdate");
             string reassembledZipDirPath = Path.Combine(latestUpdateFolderPath, "zipFile");
             string reassembledZipFilePath = Path.Combine(reassembledZipDirPath, "update.zip");
+            EnsureDirExists(reassembledZipDirPath);
 
 
             // Check if 7-Zip is available
             string sevenZipPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "7-Zip", "7z.exe");
-            if (File.Exists(sevenZipPath))
+            if (!File.Exists(sevenZipPath))
             {
-                // Combine split ZIP files using 7-Zip
-                ProcessStartInfo psi = new()
+                // Path to 7za.exe
+                sevenZipPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "7za.exe");
+                if (!File.Exists(sevenZipPath))
                 {
-                    FileName = sevenZipPath,
-                    Arguments = $"x \"{fromPath}\\updateParts.zip.001\" -o\"{reassembledZipDirPath}\"",
-                    //UseShellExecute = false,
-                    //RedirectStandardOutput = true,
-                    //CreateNoWindow = true
-                };
-
-                using Process process = Process.Start(psi) ?? throw new Exception("Failed to start 7-Zip process");
-                LogDebug("TEST 7-zip");
-                process.WaitForExit();
+                    throw new Exception("7-Zip or 7za.exe not found.");
+                }
             }
-            else
+            // Combine split ZIP files using 7-Zip
+            ProcessStartInfo psi = new()
+            {
+                FileName = sevenZipPath,
+                Arguments = $"x \"{fromPath}\\updateParts.zip.001\" -o\"{reassembledZipDirPath}\"",
+                //UseShellExecute = false,
+                //RedirectStandardOutput = true,
+                //CreateNoWindow = true
+            };
+
+            using Process process = Process.Start(psi) ?? throw new Exception("Failed to start 7-Zip or 7za.exe process");
+            LogDebug("TEST 7-zip");
+            process.WaitForExit();
+            /* else
             {
                 LogDebug("7-Zip not found. Using alternative method.");
+            
                 // Combine split ZIP files using an alternative method
-                string[] splitZipFiles = Directory.GetFiles(fromPath, "update.zip.*");
-                string combinedZipFilePath = reassembledZipFilePath;
+                string[] splitZipFiles = Directory.GetFiles(fromPath, "updateParts.zip.*");
+                LogDebug("TEST 7-zip 1");
 
-                // Combine the split ZIP files into a single file
-                using FileStream combinedFileStream = new(combinedZipFilePath, FileMode.Create, FileAccess.Write);
-                foreach (string splitZipFile in splitZipFiles.OrderBy(name => name))
+                if (splitZipFiles.Length == 0)
                 {
-                    byte[] splitZipFileBytes = File.ReadAllBytes(splitZipFile);
-                    combinedFileStream.Write(splitZipFileBytes, 0, splitZipFileBytes.Length);
+                    throw new Exception("No split ZIP files found in the directory.");
+                }
+            
+                // Sort the split ZIP files by name
+                splitZipFiles = splitZipFiles.OrderBy(name => name).ToArray();
+
+                foreach (var splitZipFile in splitZipFiles)
+                {
+                    if (!File.Exists(splitZipFile))
+                    {
+                        LogDebug($"File {splitZipFile} does not exist.");
+                    }
+                    else
+                    {
+                        var fileInfo = new FileInfo(splitZipFile);
+                        LogDebug($"File {splitZipFile} exists with size {fileInfo.Length} bytes.");
+                    }
                 }
 
-                // Extract the combined ZIP file
-                ZipFile.ExtractToDirectory(combinedZipFilePath, toPath);
-            }
+                // Open the first part of the split ZIP file
+                using Stream stream = File.OpenRead(splitZipFiles[0]);
+                var reader = ReaderFactory.Open(stream);
+                while (reader.MoveToNextEntry())
+                {
+                    if (!reader.Entry.IsDirectory)
+                    {
+                        reader.WriteEntryToDirectory(toPath, new ExtractionOptions() { Overwrite = true });
+                    }
+                }
+            } */
 
             LogDebug("ZIP files combined successfully.");
 

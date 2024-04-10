@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../../../../../../rclone/infinityfree/public_html/v"
+		},
+		{
+			"path": "../../../HTML/site-mm/v"
 		}
 	],
 	"settings": {}

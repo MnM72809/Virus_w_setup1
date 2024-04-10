@@ -8,11 +8,13 @@
     ".NETCoreApp,Version=v6.0": {
       "MessageTestBlank1/1.0.0": {
         "dependencies": {
+          "DotNetZip": "1.16.0",
           "FluentFTP": "49.0.2",
           "Newtonsoft.Json": "13.0.3",
-          "Selenium.WebDriver": "4.18.1",
-          "Selenium.WebDriver.ChromeDriver": "122.0.6261.11100",
+          "Selenium.WebDriver": "4.19.0",
+          "Selenium.WebDriver.ChromeDriver": "123.0.6312.8600",
           "Selenium.WebDriver.MicrosoftDriver": "17.17134.0",
+          "SharpCompress": "0.36.0",
           "WebDriverManager": "2.17.2"
         },
         "runtime": {
@@ -27,6 +29,18 @@
           "lib/net6.0/AngleSharp.dll": {
             "assemblyVersion": "1.1.0.0",
             "fileVersion": "1.1.0.0"
+          }
+        }
+      },
+      "DotNetZip/1.16.0": {
+        "dependencies": {
+          "System.Security.Permissions": "4.7.0",
+          "System.Text.Encoding.CodePages": "6.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/DotNetZip.dll": {
+            "assemblyVersion": "1.16.0.0",
+            "fileVersion": "1.16.0.0"
           }
         }
       },
@@ -45,6 +59,25 @@
           "System.Security.Principal.Windows": "5.0.0"
         }
       },
+      "Microsoft.Win32.SystemEvents/4.7.0": {
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "5.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Win32.SystemEvents.dll": {
+            "assemblyVersion": "4.0.2.0",
+            "fileVersion": "4.700.19.56404"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/netcoreapp3.0/Microsoft.Win32.SystemEvents.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.2.0",
+            "fileVersion": "4.700.19.56404"
+          }
+        }
+      },
       "Newtonsoft.Json/13.0.3": {
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
@@ -53,7 +86,7 @@
           }
         }
       },
-      "Selenium.WebDriver/4.18.1": {
+      "Selenium.WebDriver/4.19.0": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.3"
         },
@@ -64,13 +97,50 @@
           }
         }
       },
-      "Selenium.WebDriver.ChromeDriver/122.0.6261.11100": {},
+      "Selenium.WebDriver.ChromeDriver/123.0.6312.8600": {},
       "Selenium.WebDriver.MicrosoftDriver/17.17134.0": {},
+      "SharpCompress/0.36.0": {
+        "dependencies": {
+          "ZstdSharp.Port": "0.7.4"
+        },
+        "runtime": {
+          "lib/net6.0/SharpCompress.dll": {
+            "assemblyVersion": "0.36.0.0",
+            "fileVersion": "0.36.0.0"
+          }
+        }
+      },
       "SharpZipLib/1.4.2": {
         "runtime": {
           "lib/net6.0/ICSharpCode.SharpZipLib.dll": {
             "assemblyVersion": "1.4.2.13",
             "fileVersion": "1.4.2.13"
+          }
+        }
+      },
+      "System.Drawing.Common/4.7.0": {
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "5.0.0",
+          "Microsoft.Win32.SystemEvents": "4.7.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Drawing.Common.dll": {
+            "assemblyVersion": "4.0.0.1",
+            "fileVersion": "4.6.26919.2"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/unix/lib/netcoreapp3.0/System.Drawing.Common.dll": {
+            "rid": "unix",
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.2.0",
+            "fileVersion": "4.700.19.56404"
+          },
+          "runtimes/win/lib/netcoreapp3.0/System.Drawing.Common.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.2.0",
+            "fileVersion": "4.700.19.56404"
           }
         }
       },
@@ -81,10 +151,41 @@
           "System.Security.Principal.Windows": "5.0.0"
         }
       },
+      "System.Security.Permissions/4.7.0": {
+        "dependencies": {
+          "System.Security.AccessControl": "5.0.0",
+          "System.Windows.Extensions": "4.7.0"
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/System.Security.Permissions.dll": {
+            "assemblyVersion": "4.0.3.0",
+            "fileVersion": "4.700.19.56404"
+          }
+        }
+      },
       "System.Security.Principal.Windows/5.0.0": {},
       "System.Text.Encoding.CodePages/6.0.0": {
         "dependencies": {
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
+      },
+      "System.Windows.Extensions/4.7.0": {
+        "dependencies": {
+          "System.Drawing.Common": "4.7.0"
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/System.Windows.Extensions.dll": {
+            "assemblyVersion": "4.0.1.0",
+            "fileVersion": "4.700.19.56404"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/netcoreapp3.0/System.Windows.Extensions.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.1.0",
+            "fileVersion": "4.700.19.56404"
+          }
         }
       },
       "WebDriverManager/2.17.2": {
@@ -98,6 +199,14 @@
           "lib/netstandard2.1/WebDriverManager.dll": {
             "assemblyVersion": "2.17.2.0",
             "fileVersion": "2.17.2.0"
+          }
+        }
+      },
+      "ZstdSharp.Port/0.7.4": {
+        "runtime": {
+          "lib/net6.0/ZstdSharp.dll": {
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       }
@@ -115,6 +224,13 @@
       "sha512": "sha512-3baCuPkx2Wrpjr2b67wJAf9fCbYSbEVcdCh88S66HLdfHa2b1Mk1FsGpcH76uHLf3MPxopWngT1imHPEmDimAg==",
       "path": "anglesharp/1.1.0",
       "hashPath": "anglesharp.1.1.0.nupkg.sha512"
+    },
+    "DotNetZip/1.16.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-CS9sjjXF23FLIbwlLT5k/jXBYxVnLMn01lyAvN/hxFM+UDvSicjTPB9ZMA+Wp/QlvBPbD2pzkAXUp1O50gP/Lw==",
+      "path": "dotnetzip/1.16.0",
+      "hashPath": "dotnetzip.1.16.0.nupkg.sha512"
     },
     "FluentFTP/49.0.2": {
       "type": "package",
@@ -137,6 +253,13 @@
       "path": "microsoft.win32.registry/5.0.0",
       "hashPath": "microsoft.win32.registry.5.0.0.nupkg.sha512"
     },
+    "Microsoft.Win32.SystemEvents/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-mtVirZr++rq+XCDITMUdnETD59XoeMxSpLRIII7JRI6Yj0LEDiO1pPn0ktlnIj12Ix8bfvQqQDMMIF9wC98oCA==",
+      "path": "microsoft.win32.systemevents/4.7.0",
+      "hashPath": "microsoft.win32.systemevents.4.7.0.nupkg.sha512"
+    },
     "Newtonsoft.Json/13.0.3": {
       "type": "package",
       "serviceable": true,
@@ -144,19 +267,19 @@
       "path": "newtonsoft.json/13.0.3",
       "hashPath": "newtonsoft.json.13.0.3.nupkg.sha512"
     },
-    "Selenium.WebDriver/4.18.1": {
+    "Selenium.WebDriver/4.19.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-x9Pkz+kzcZ6dToJFLiem36pp0xmIfu/DXFf3U7EaoFqdtYyLsDJB0e/v58NAghcPTrAwJMSduEAokBRFFCxAxg==",
-      "path": "selenium.webdriver/4.18.1",
-      "hashPath": "selenium.webdriver.4.18.1.nupkg.sha512"
+      "sha512": "sha512-rguRY+Kbiow0s7RHtnHXnJdMgsmqAOOtv7ZGBtIQ1DbErkFtksrZHdUMcKyMK6VKNMmfsViqcCDGw4mPSPT70w==",
+      "path": "selenium.webdriver/4.19.0",
+      "hashPath": "selenium.webdriver.4.19.0.nupkg.sha512"
     },
-    "Selenium.WebDriver.ChromeDriver/122.0.6261.11100": {
+    "Selenium.WebDriver.ChromeDriver/123.0.6312.8600": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-lqzJXzFMPyFr+TTPIrvREEiF3mHYHSvzoFy3tLNpMc4dPMbEBu759v6lT1fhUeOQMkHRaxeDdnM3oADAHCw0+g==",
-      "path": "selenium.webdriver.chromedriver/122.0.6261.11100",
-      "hashPath": "selenium.webdriver.chromedriver.122.0.6261.11100.nupkg.sha512"
+      "sha512": "sha512-1OnN2EepEdRxCKkVJHZFaLoCNWpwELO1un2RzDcpRsjulemXiBV9xv4Fz0ylKQtTRGeKapTSAK5E1eZL+draQw==",
+      "path": "selenium.webdriver.chromedriver/123.0.6312.8600",
+      "hashPath": "selenium.webdriver.chromedriver.123.0.6312.8600.nupkg.sha512"
     },
     "Selenium.WebDriver.MicrosoftDriver/17.17134.0": {
       "type": "package",
@@ -165,12 +288,26 @@
       "path": "selenium.webdriver.microsoftdriver/17.17134.0",
       "hashPath": "selenium.webdriver.microsoftdriver.17.17134.0.nupkg.sha512"
     },
+    "SharpCompress/0.36.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-48am//T6Ou+GmyPmBaxaFN1ym0VNidRcBeANr9+OYTzpKRz8QMGzAkHVkCV30lFQ/gnWqGr50AuebahpG1C6xA==",
+      "path": "sharpcompress/0.36.0",
+      "hashPath": "sharpcompress.0.36.0.nupkg.sha512"
+    },
     "SharpZipLib/1.4.2": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-yjj+3zgz8zgXpiiC3ZdF/iyTBbz2fFvMxZFEBPUcwZjIvXOf37Ylm+K58hqMfIBt5JgU/Z2uoUS67JmTLe973A==",
       "path": "sharpziplib/1.4.2",
       "hashPath": "sharpziplib.1.4.2.nupkg.sha512"
+    },
+    "System.Drawing.Common/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-v+XbyYHaZjDfn0ENmJEV1VYLgGgCTx1gnfOBcppowbpOAriglYgGCvFCPr2EEZyBvXlpxbEsTwkOlInl107ahA==",
+      "path": "system.drawing.common/4.7.0",
+      "hashPath": "system.drawing.common.4.7.0.nupkg.sha512"
     },
     "System.Runtime.CompilerServices.Unsafe/6.0.0": {
       "type": "package",
@@ -186,6 +323,13 @@
       "path": "system.security.accesscontrol/5.0.0",
       "hashPath": "system.security.accesscontrol.5.0.0.nupkg.sha512"
     },
+    "System.Security.Permissions/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dkOV6YYVBnYRa15/yv004eCGRBVADXw8qRbbNiCn/XpdJSUXkkUeIvdvFHkvnko4CdKMqG8yRHC4ox83LSlMsQ==",
+      "path": "system.security.permissions/4.7.0",
+      "hashPath": "system.security.permissions.4.7.0.nupkg.sha512"
+    },
     "System.Security.Principal.Windows/5.0.0": {
       "type": "package",
       "serviceable": true,
@@ -200,12 +344,26 @@
       "path": "system.text.encoding.codepages/6.0.0",
       "hashPath": "system.text.encoding.codepages.6.0.0.nupkg.sha512"
     },
+    "System.Windows.Extensions/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-CeWTdRNfRaSh0pm2gDTJFwVaXfTq6Xwv/sA887iwPTneW7oMtMlpvDIO+U60+3GWTB7Aom6oQwv5VZVUhQRdPQ==",
+      "path": "system.windows.extensions/4.7.0",
+      "hashPath": "system.windows.extensions.4.7.0.nupkg.sha512"
+    },
     "WebDriverManager/2.17.2": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-SHojgD2qz1G+2y0a+U96Z+ciGMGBf+mJMNSH1ojYU1AGnjDpGIRKSef0pT/nySRZm6NxQWOGdwqdCIhqsYDFtA==",
       "path": "webdrivermanager/2.17.2",
       "hashPath": "webdrivermanager.2.17.2.nupkg.sha512"
+    },
+    "ZstdSharp.Port/0.7.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ziptnotpUJr51afwXJQ5Wc03dvDiZAdmxS08s1g7SHn/VzbyZUXdH6yORk/zaNjzUOEE6pVZ0Nqztab0rYROgQ==",
+      "path": "zstdsharp.port/0.7.4",
+      "hashPath": "zstdsharp.port.0.7.4.nupkg.sha512"
     }
   }
 }
