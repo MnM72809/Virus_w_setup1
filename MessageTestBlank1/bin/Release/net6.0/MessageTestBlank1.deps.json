@@ -9,10 +9,10 @@
       "MessageTestBlank1/1.0.0": {
         "dependencies": {
           "DotNetZip": "1.16.0",
-          "FluentFTP": "49.0.2",
+          "FluentFTP": "50.0.1",
           "Newtonsoft.Json": "13.0.3",
           "Selenium.WebDriver": "4.19.0",
-          "Selenium.WebDriver.ChromeDriver": "123.0.6312.8600",
+          "Selenium.WebDriver.ChromeDriver": "123.0.6312.12200",
           "Selenium.WebDriver.MicrosoftDriver": "17.17134.0",
           "SharpCompress": "0.36.0",
           "WebDriverManager": "2.17.2"
@@ -44,11 +44,11 @@
           }
         }
       },
-      "FluentFTP/49.0.2": {
+      "FluentFTP/50.0.1": {
         "runtime": {
           "lib/net6.0/FluentFTP.dll": {
-            "assemblyVersion": "49.0.2.0",
-            "fileVersion": "49.0.2.0"
+            "assemblyVersion": "50.0.1.0",
+            "fileVersion": "50.0.1.0"
           }
         }
       },
@@ -97,7 +97,7 @@
           }
         }
       },
-      "Selenium.WebDriver.ChromeDriver/123.0.6312.8600": {},
+      "Selenium.WebDriver.ChromeDriver/123.0.6312.12200": {},
       "Selenium.WebDriver.MicrosoftDriver/17.17134.0": {},
       "SharpCompress/0.36.0": {
         "dependencies": {
@@ -232,12 +232,12 @@
       "path": "dotnetzip/1.16.0",
       "hashPath": "dotnetzip.1.16.0.nupkg.sha512"
     },
-    "FluentFTP/49.0.2": {
+    "FluentFTP/50.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wc3NzrKoUwEcbAvyF3/VKi1DQfjZwmxKpvfCEjPEYD5Xqm7dyeDlDGQoIy7JtNP0S7yFU6P3Lc6Oo9TT4/CMMQ==",
-      "path": "fluentftp/49.0.2",
-      "hashPath": "fluentftp.49.0.2.nupkg.sha512"
+      "sha512": "sha512-iNG+wYZcBoOQmnrgR0EzUU1KHy3mOG/osGcd+bZMDcTC45tTLR45o0uInKd74t669d1JhGHBTzZKpSQOxBSisg==",
+      "path": "fluentftp/50.0.1",
+      "hashPath": "fluentftp.50.0.1.nupkg.sha512"
     },
     "Microsoft.NETCore.Platforms/5.0.0": {
       "type": "package",
@@ -274,12 +274,12 @@
       "path": "selenium.webdriver/4.19.0",
       "hashPath": "selenium.webdriver.4.19.0.nupkg.sha512"
     },
-    "Selenium.WebDriver.ChromeDriver/123.0.6312.8600": {
+    "Selenium.WebDriver.ChromeDriver/123.0.6312.12200": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-1OnN2EepEdRxCKkVJHZFaLoCNWpwELO1un2RzDcpRsjulemXiBV9xv4Fz0ylKQtTRGeKapTSAK5E1eZL+draQw==",
-      "path": "selenium.webdriver.chromedriver/123.0.6312.8600",
-      "hashPath": "selenium.webdriver.chromedriver.123.0.6312.8600.nupkg.sha512"
+      "sha512": "sha512-IDN7gQ7wlXmV05+Y4K6UdnY36H/SrIxMUqAnKtT6yEBnVNX4K03rHRs8zkMM+EC78V0Xt+PFpyDUYto+jG4t/w==",
+      "path": "selenium.webdriver.chromedriver/123.0.6312.12200",
+      "hashPath": "selenium.webdriver.chromedriver.123.0.6312.12200.nupkg.sha512"
     },
     "Selenium.WebDriver.MicrosoftDriver/17.17134.0": {
       "type": "package",

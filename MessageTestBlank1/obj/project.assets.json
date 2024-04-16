@@ -35,7 +35,7 @@
           }
         }
       },
-      "FluentFTP/49.0.2": {
+      "FluentFTP/50.0.1": {
         "type": "package",
         "compile": {
           "lib/net6.0/FluentFTP.dll": {
@@ -134,7 +134,7 @@
           "buildTransitive/Selenium.WebDriver.targets": {}
         }
       },
-      "Selenium.WebDriver.ChromeDriver/123.0.6312.8600": {
+      "Selenium.WebDriver.ChromeDriver/123.0.6312.12200": {
         "type": "package",
         "build": {
           "build/Selenium.WebDriver.ChromeDriver.targets": {}
@@ -391,15 +391,15 @@
         "lib/netstandard2.0/DotNetZip.xml"
       ]
     },
-    "FluentFTP/49.0.2": {
-      "sha512": "wc3NzrKoUwEcbAvyF3/VKi1DQfjZwmxKpvfCEjPEYD5Xqm7dyeDlDGQoIy7JtNP0S7yFU6P3Lc6Oo9TT4/CMMQ==",
+    "FluentFTP/50.0.1": {
+      "sha512": "iNG+wYZcBoOQmnrgR0EzUU1KHy3mOG/osGcd+bZMDcTC45tTLR45o0uInKd74t669d1JhGHBTzZKpSQOxBSisg==",
       "type": "package",
-      "path": "fluentftp/49.0.2",
+      "path": "fluentftp/50.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE.TXT",
-        "fluentftp.49.0.2.nupkg.sha512",
+        "fluentftp.50.0.1.nupkg.sha512",
         "fluentftp.nuspec",
         "lib/net462/FluentFTP.dll",
         "lib/net462/FluentFTP.xml",
@@ -557,10 +557,10 @@
         "selenium.webdriver.nuspec"
       ]
     },
-    "Selenium.WebDriver.ChromeDriver/123.0.6312.8600": {
-      "sha512": "1OnN2EepEdRxCKkVJHZFaLoCNWpwELO1un2RzDcpRsjulemXiBV9xv4Fz0ylKQtTRGeKapTSAK5E1eZL+draQw==",
+    "Selenium.WebDriver.ChromeDriver/123.0.6312.12200": {
+      "sha512": "IDN7gQ7wlXmV05+Y4K6UdnY36H/SrIxMUqAnKtT6yEBnVNX4K03rHRs8zkMM+EC78V0Xt+PFpyDUYto+jG4t/w==",
       "type": "package",
-      "path": "selenium.webdriver.chromedriver/123.0.6312.8600",
+      "path": "selenium.webdriver.chromedriver/123.0.6312.12200",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -577,7 +577,7 @@
         "driver/win32/LICENSE.chromedriver",
         "driver/win32/chromedriver.exe",
         "nupkg-icon.png",
-        "selenium.webdriver.chromedriver.123.0.6312.8600.nupkg.sha512",
+        "selenium.webdriver.chromedriver.123.0.6312.12200.nupkg.sha512",
         "selenium.webdriver.chromedriver.nuspec"
       ]
     },
@@ -923,10 +923,10 @@
   "projectFileDependencyGroups": {
     "net6.0": [
       "DotNetZip >= 1.16.0",
-      "FluentFTP >= 49.0.2",
+      "FluentFTP >= 50.0.1",
       "Newtonsoft.Json >= 13.0.3",
       "Selenium.WebDriver >= 4.19.0",
-      "Selenium.WebDriver.ChromeDriver >= 123.0.6312.8600",
+      "Selenium.WebDriver.ChromeDriver >= 123.0.6312.12200",
       "Selenium.WebDriver.MicrosoftDriver >= 17.17134.0",
       "SharpCompress >= 0.36.0",
       "WebDriverManager >= 2.17.2"
@@ -983,7 +983,7 @@
           },
           "FluentFTP": {
             "target": "Package",
-            "version": "[49.0.2, )"
+            "version": "[50.0.1, )"
           },
           "Newtonsoft.Json": {
             "target": "Package",
@@ -995,7 +995,7 @@
           },
           "Selenium.WebDriver.ChromeDriver": {
             "target": "Package",
-            "version": "[123.0.6312.8600, )"
+            "version": "[123.0.6312.12200, )"
           },
           "Selenium.WebDriver.MicrosoftDriver": {
             "target": "Package",
