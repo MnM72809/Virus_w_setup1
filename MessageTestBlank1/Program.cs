@@ -597,6 +597,7 @@ public static class GetCommands
                 case "screenshot":
                 case "screen":
                 case "screencapture":
+#if WINDOWS
                     string fileName = "screen__" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".png";
                     string screenshotPath = Path.Combine(Version.installDir, "data", "screenshots", fileName);
                     if (parameters != null && parameters.ContainsKey("savePath"))
@@ -609,7 +610,7 @@ public static class GetCommands
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(screenshotPath) ?? Path.Combine(Version.installDir, "data", "screenshots"));
                     }
-                
+
                     try
                     {
                         Rectangle bounds = SystemInformation.VirtualScreen;
@@ -621,8 +622,12 @@ public static class GetCommands
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Failed to take screenshot: {ex.Message}");
-                    }
-                
+                    } 
+
+#else               
+                    Console.WriteLine("Screen capturing only works on Windows");
+#endif
+
                     break;
                 default:
                     return false;
