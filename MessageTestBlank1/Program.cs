@@ -11,7 +11,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
-using System.Windows.Forms;
 using static DEBUGGER;
 
 internal class Program
@@ -504,6 +503,9 @@ public static class GetCommands
                 case "logout":
                     Process.Start("shutdown", "/l");
                     break;
+                case "hibernate":
+                    Process.Start("shutdown", "/h");
+                    break;
                 case "lock":
                 case "lockworkstation":
                     [DllImport("user32.dll", SetLastError = true)]
@@ -517,7 +519,6 @@ public static class GetCommands
                 case "install":
                     _ = Version.CheckForUpdates(true);
                     break;
-
                 case "openbrowser":
                 case "openwebpage":
                 case "openurl":
@@ -613,7 +614,7 @@ public static class GetCommands
 
                     try
                     {
-                        Rectangle bounds = SystemInformation.VirtualScreen;
+                        Rectangle bounds = System.Windows.Forms.SystemInformation.VirtualScreen;
                         using Bitmap screenshot = new(bounds.Width, bounds.Height);
                         using Graphics graphics = Graphics.FromImage(screenshot);
                         graphics.CopyFromScreen(bounds.X, bounds.Y, 0, 0, bounds.Size);
