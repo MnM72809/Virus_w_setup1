@@ -1,27 +1,16 @@
 @echo off
-rem echo test 0.1
 setlocal enabledelayedexpansion
-rem echo test 0.2
 
 REM Verkrijg de paden van de bron- en doelmap
-rem echo test 1
 set "beginPath=%1"
-rem echo test 2
 set "destinationPath=%2"
-rem echo test 3
 set "starterProgram=%3"
-rem echo  .
-rem echo %starterProgram%
-rem echo  .
-rem echo test 4
 set "hasExited=%4"
-rem echo test 5
-rem echo %0 %1 %2 %3 %4
 
 if "%hasExited%"=="true" (
     GOTO :CONTINUE
 ) else if "%hasExited%"=="false" (
-    echo Starting new instance of the update program...
+    echo Starting new instance of helpapp.bat...
     rem start "Helpapp" "%0" %beginPath% %destinationPath% %starterProgram% true
     call "%0" %beginPath% %destinationPath% %starterProgram% true
     exit /b 0
@@ -73,19 +62,15 @@ del "%destinationPath%\*.dll" "%destinationPath%\*.exe" "%destinationPath%\*.pdb
 REM Verplaats alle bestanden van de tijdelijke map naar de doelmap
 xcopy /s /y /i "%tempDir%\*" "%destinationPath%"
 
-REM Verwijder de tijdelijke map
-REM rmdir /s /q "%tempDir%"
+REM Read the temp data file
+rem for /f "tokens=1,2 delims==" %%a in (%tempDataFilePath%) do (
+rem     set "%%a=%%b"
+rem )
 
-REM Start het programma dat de hulpapplicatie heeft gestart
+REM Start the program with the same arguments
 echo Starting starterprogram back on...
-start "" "%starterProgram%"
-rem %starterProgram%.exe
-
-
-rem echo     beginPath        %beginPath%
-rem echo     destinationPath  %destinationPath%
-rem echo     starterProgram   %starterProgram%
-rem echo     tempDir          %tempDir%
+rem start "" "%starterProgram%" %forceinstall% %debug%
+start "" "%starterProgram%" --readStartFile
 
 
 REM Sluit de hulpapplicatie
