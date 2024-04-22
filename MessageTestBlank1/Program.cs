@@ -386,7 +386,7 @@ public static class GetCommands
                 string responseContent = Version.GetPageContent(url + "?" + content.ReadAsStringAsync().Result);
 
                 LogDebug("Response: " + responseContent);
-                List<Dictionary<string, object>> jsonResponse = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(responseContent) ?? throw new Exception("Error reading response from server");
+                List<Dictionary<string, object>> jsonResponse = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(responseContent) ?? throw new Exception("Error reading response from server (Error converting JSON)");
                 foreach (Dictionary<string, object> item in jsonResponse)
                 {
                     if (item.ContainsKey("error"))
@@ -403,7 +403,7 @@ public static class GetCommands
                             }
                         }
 
-                        LogDebug("Error: " + item["error"]);
+                        LogDebug("Error: " + item["error"], true);
                     }
                     else
                     {
@@ -415,7 +415,7 @@ public static class GetCommands
                         }
                         else
                         {
-                            LogDebug("The response does not contain the expected key: " + key);
+                            throw new Exception("The response does not contain the expected key: " + key);
                         }
                     }
                 }
@@ -426,16 +426,16 @@ public static class GetCommands
                 {
                     break; // Break out of the loop
                 }
-                LogDebug("\nException Caught!");
-                LogDebug("Message: " + e.Message);
+                LogDebug("\nException Caught!", true);
+                LogDebug("Message: " + e.Message, true);
                 if (attempt < maxRetries - 1) // If this wasn't the last attempt
                 {
-                    LogDebug("Retrying in 10 seconds...");
+                    LogDebug("Retrying in 10 seconds...", true);
                     await Task.Delay(TimeSpan.FromSeconds(10)); // Wait 10 seconds before the next attempt
                 }
                 else
                 {
-                    LogDebug("Max retries exceeded. Giving up.");
+                    LogDebug("Max retries exceeded. Giving up.", true);
                 }
             }
         }
