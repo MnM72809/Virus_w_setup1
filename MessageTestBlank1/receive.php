@@ -101,9 +101,32 @@ try {
                 $conn->close();
                 exit;
             }
-            
+
             // Use the computer's ID to determine the save file path
             $computerId = $commandString['computer_id'];
+
+            // Save computer ID into a file with a list of id's
+            $computerId = $_POST['computerId'];
+
+            $file = 'computers.txt';
+
+            // Check if the file exists
+            if (file_exists($file)) {
+                $contents = file_get_contents($file);
+
+                // Check if the computerId is already in the file
+                if (strpos($contents, $computerId) === false) {
+                    // If not, append it
+                    file_put_contents($file, $computerId . PHP_EOL, FILE_APPEND);
+                    //echo "ComputerId added successfully.";
+                } else {
+                    //echo "ComputerId already exists in the file.";
+                }
+            } else {
+                // If the file doesn't exist, create it and add the computerId
+                file_put_contents($file, $computerId . PHP_EOL);
+                //echo "File created and ComputerId added successfully.";
+            }
 
             // Prepare an SQL statement
             $stmt = $conn->prepare("INSERT INTO commands (computer_id, command) VALUES (?, ?)");
